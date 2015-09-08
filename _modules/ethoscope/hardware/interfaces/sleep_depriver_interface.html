@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ethoscope.hardware.interfaces.sleep_depriver_interface &mdash; ethoscope 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ethoscope 1.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">ethoscope 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ethoscope.hardware.interfaces.sleep_depriver_interface</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
+
+<span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">from</span> <span class="nn">serial.tools</span> <span class="kn">import</span> <span class="n">list_ports</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="kn">from</span> <span class="nn">ethoscope.hardware.interfaces.interfaces</span> <span class="kn">import</span> <span class="n">BaseInterface</span>
+
+<div class="viewcode-block" id="NoValidPortError"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.NoValidPortError">[docs]</a><span class="k">class</span> <span class="nc">NoValidPortError</span><span class="p">(</span><span class="n">serial</span><span class="o">.</span><span class="n">SerialException</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+<div class="viewcode-block" id="WrongSleepDepPortError"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.WrongSleepDepPortError">[docs]</a><span class="k">class</span> <span class="nc">WrongSleepDepPortError</span><span class="p">(</span><span class="n">serial</span><span class="o">.</span><span class="n">SerialException</span><span class="p">):</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="SimpleLynxMotionConnection"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection">[docs]</a><span class="k">class</span> <span class="nc">SimpleLynxMotionConnection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">_baud</span> <span class="o">=</span> <span class="mi">115200</span>
+    <span class="n">_min_angle_pulse</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">800.</span><span class="p">)</span>
+    <span class="n">_max_angle_pulse</span> <span class="o">=</span> <span class="p">(</span><span class="mf">150.</span><span class="p">,</span><span class="mf">2400.</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Connecting to Lynx motion serial port...&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_find_port</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="n">port</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_serial_connection</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_find_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_port_tuples</span> <span class="o">=</span> <span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;listing serial ports&quot;</span><span class="p">)</span>
+
+        <span class="n">all_ports</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ap</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span>  <span class="ow">in</span> <span class="n">all_port_tuples</span><span class="p">:</span>
+            <span class="n">all_ports</span> <span class="o">|=</span> <span class="p">{</span><span class="n">ap</span><span class="p">}</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ap</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">ap</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_ports</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;trying port </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ap</span><span class="p">))</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c">#here we use a recursive strategy to find the good port (ap).</span>
+                <span class="n">SimpleLynxMotionConnection</span><span class="p">(</span><span class="n">ap</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">ap</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">WrongSleepDepPortError</span><span class="p">,</span> <span class="n">serial</span><span class="o">.</span><span class="n">SerialException</span><span class="p">):</span>
+                <span class="n">warn_str</span> <span class="o">=</span> <span class="s">&quot;Tried to use port </span><span class="si">%s</span><span class="s">. Failed.&quot;</span> <span class="o">%</span> <span class="n">ap</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">warn_str</span><span class="p">)</span>
+                <span class="k">pass</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;No valid port detected!. Possibly, device not plugged/detected.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NoValidPortError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c">#</span>
+    <span class="k">def</span> <span class="nf">_test_serial_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span>
+
+        <span class="c"># try:</span>
+            <span class="c"># If we fail to ping the port, this is a wrong port</span>
+
+            <span class="c">#self._serial.write(&quot;L\n&quot;)</span>
+<span class="c">#             r = self._serial.readline()</span>
+<span class="c">#             if not r:</span>
+<span class="c">#                 raise WrongSleepDepPortError</span>
+<span class="c">#             self.deprive(0)</span>
+<span class="c">#</span>
+<span class="c">#         except (OSError, serial.SerialException):</span>
+<span class="c">#             raise WrongSleepDepPortError</span>
+<span class="c"># #</span>
+<span class="c">#</span>
+<span class="c">#</span>
+
+    <span class="k">def</span> <span class="nf">_angle_to_pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">angle</span><span class="p">):</span>
+        <span class="n">min_a</span><span class="p">,</span> <span class="n">min_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_angle_pulse</span>
+        <span class="n">max_a</span><span class="p">,</span> <span class="n">max_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_angle_pulse</span>
+
+        <span class="k">if</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="n">max_a</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Angle too wide: </span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">angle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">angle</span> <span class="o">&lt;</span> <span class="n">min_a</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Angle too narrow: </span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">angle</span><span class="p">)</span>
+
+        <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_p</span> <span class="o">-</span> <span class="n">min_p</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">max_a</span><span class="o">-</span><span class="n">min_a</span><span class="p">)</span>
+        <span class="n">pulse</span> <span class="o">=</span> <span class="n">min_p</span> <span class="o">+</span> <span class="n">angle</span> <span class="o">*</span> <span class="n">slope</span>
+        <span class="k">return</span> <span class="n">pulse</span>
+
+<div class="viewcode-block" id="SimpleLynxMotionConnection.move_to_angle"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection.move_to_angle">[docs]</a>    <span class="k">def</span> <span class="nf">move_to_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">,</span><span class="n">angle</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">time</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;idx must be greater or equal to one&quot;</span><span class="p">)</span>
+        <span class="n">pulse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_to_pulse</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+        <span class="n">instruction</span> <span class="o">=</span> <span class="s">&quot;#</span><span class="si">%i</span><span class="s"> P</span><span class="si">%i</span><span class="s"> T</span><span class="si">%i</span><span class="se">\r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span><span class="n">pulse</span><span class="p">,</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">o</span>
+</div></div>
+<div class="viewcode-block" id="SleepDepriverConnection"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection">[docs]</a><span class="k">class</span> <span class="nc">SleepDepriverConnection</span><span class="p">(</span><span class="n">SimpleLynxMotionConnection</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SleepDepriverConnection</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warm_up</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SleepDepriverConnection.warm_up"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.warm_up">[docs]</a>    <span class="k">def</span> <span class="nf">warm_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deprive</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SleepDepriverConnection.deprive"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.deprive">[docs]</a>    <span class="k">def</span> <span class="nf">deprive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">channel</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_to_angle</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_angle_pulse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_to_angle</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_angle_pulse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="SleepDepriverSubProcess"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess">[docs]</a><span class="k">class</span> <span class="nc">SleepDepriverSubProcess</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+    <span class="n">_DepriverConnectionClass</span> <span class="o">=</span> <span class="n">SleepDepriverConnection</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">queue</span><span class="p">,</span> <span class="n">fake</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SleepDepriverSubProcess</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SleepDepriverSubProcess.run"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">do_run</span><span class="o">=</span><span class="bp">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sleep_dep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_DepriverConnectionClass</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_kwargs</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="n">do_run</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">instruction_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">instruction_kwargs</span> <span class="o">==</span> <span class="s">&#39;DONE&#39;</span><span class="p">):</span>
+                        <span class="n">do_run</span><span class="o">=</span><span class="bp">False</span>
+                        <span class="k">continue</span>
+                    <span class="n">sleep_dep</span><span class="o">.</span><span class="n">deprive</span><span class="p">(</span><span class="o">**</span><span class="n">instruction_kwargs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">do_run</span><span class="o">=</span><span class="bp">False</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Unexpected error whist depriving. Instruction was: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">instruction_kwargs</span><span class="p">))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                        <span class="c">#we sleep iff we have an empty queue. this way, we don&#39;t over use a cpu</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Sleep depriver async process interrupted with KeyboardInterrupt&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Sleep depriver  async process stopped with an exception&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Closing async sleep depriver&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="SleepDepriverInterface"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface">[docs]</a><span class="k">class</span> <span class="nc">SleepDepriverInterface</span><span class="p">(</span><span class="n">BaseInterface</span><span class="p">):</span>
+    <span class="n">_SubProcessClass</span> <span class="o">=</span> <span class="n">SleepDepriverSubProcess</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">port</span><span class="o">=</span><span class="s">&quot;/dev/ttyUSB0&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">JoinableQueue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SubProcessClass</span><span class="p">(</span><span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span> <span class="c"># fixme, auto port detection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_interface</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SleepDepriverInterface</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SleepDepriverInterface.interact"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface.interact">[docs]</a>    <span class="k">def</span> <span class="nf">interact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_warm_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># TODO</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Closing sleep depriver interface&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s">&quot;DONE&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Freeing queue&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">cancel_join_thread</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Joining thread&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_interface</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Joined OK&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">ethoscope 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Quentin Geissmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
