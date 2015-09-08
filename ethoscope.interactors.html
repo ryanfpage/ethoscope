@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ethoscope.interactors package &mdash; ethoscope 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ethoscope 1.0 documentation" href="index.html" />
+    <link rel="prev" title="ethoscope.trackers package" href="ethoscope.trackers.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ethoscope.trackers.html" title="ethoscope.trackers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ethoscope 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ethoscope.interactors package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ethoscope.interactors.fake_sleep_dep_interactor">ethoscope.interactors.fake_sleep_dep_interactor module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.interactors.interactors">ethoscope.interactors.interactors module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.interactors.sleep_depriver_interactor">ethoscope.interactors.sleep_depriver_interactor module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.interactors">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ethoscope.trackers.html"
+                        title="previous chapter">ethoscope.trackers package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ethoscope.interactors.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ethoscope-interactors-package">
+<h1>ethoscope.interactors package<a class="headerlink" href="#ethoscope-interactors-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ethoscope.interactors.fake_sleep_dep_interactor">
+<span id="ethoscope-interactors-fake-sleep-dep-interactor-module"></span><h2>ethoscope.interactors.fake_sleep_dep_interactor module<a class="headerlink" href="#module-ethoscope.interactors.fake_sleep_dep_interactor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.fake_sleep_dep_interactor.</code><code class="descname">FakeSleepDepInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em>, <em>velocity_threshold=0.006</em>, <em>min_inactive_time=120</em>, <em>start_datetime=0</em>, <em>end_datetime=9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/fake_sleep_dep_interactor.html#FakeSleepDepInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor" title="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor.description">
+<code class="descname">description</code><em class="property"> = {'overview': 'A dummy interactor that simply print messages instead of moving tubes. For development only', 'arguments': [{'description': 'The minimal velocity that counts as movement', 'min': 0.0, 'default': 0.006, 'max': 1.0, 'step': 0.0001, 'type': 'number', 'name': 'velocity_threshold'}, {'description': 'The minimal time after which an inactive animal is awaken', 'min': 1, 'default': 120, 'max': 43200, 'step': 1, 'type': 'number', 'name': 'min_inactive_time'}, {'default': 0, 'type': 'datetime', 'name': 'start_datetime', 'description': 'When sleep deprivation is to be started'}, {'default': 9223372036854775807, 'type': 'datetime', 'name': 'end_datetime', 'description': 'When sleep deprivation is to be ended'}]}</em><a class="headerlink" href="#ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.interactors.interactors">
+<span id="ethoscope-interactors-interactors-module"></span><h2>ethoscope.interactors.interactors module<a class="headerlink" href="#module-ethoscope.interactors.interactors" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.interactors.interactors.BaseInteractor">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.interactors.</code><code class="descname">BaseInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/interactors.html#BaseInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.interactors.BaseInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ethoscope.utils.html#ethoscope.utils.description.DescribedObject" title="ethoscope.utils.description.DescribedObject"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.utils.description.DescribedObject</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.interactors.interactors.BaseInteractor.bind_tracker">
+<code class="descname">bind_tracker</code><span class="sig-paren">(</span><em>tracker</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/interactors.html#BaseInteractor.bind_tracker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.interactors.BaseInteractor.bind_tracker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.interactors.interactors.DefaultInteractor">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.interactors.</code><code class="descname">DefaultInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/interactors.html#DefaultInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.interactors.DefaultInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.interactors.interactors.BaseInteractor" title="ethoscope.interactors.interactors.BaseInteractor"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.interactors.interactors.BaseInteractor</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.interactors.interactors.DefaultInteractor.description">
+<code class="descname">description</code><em class="property"> = {'overview': 'The default sleep monitor arena with ten rows of two tubes.', 'arguments': []}</em><a class="headerlink" href="#ethoscope.interactors.interactors.DefaultInteractor.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.interactors.interactors.HasInteractedVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.interactors.</code><code class="descname">HasInteractedVariable</code><a class="reference internal" href="_modules/ethoscope/interactors/interactors.html#HasInteractedVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.interactors.HasInteractedVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="ethoscope.core.html#ethoscope.core.variables.BoolVariableBase" title="ethoscope.core.variables.BoolVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.BoolVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.interactors.interactors.HasInteractedVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'has_interacted'</em><a class="headerlink" href="#ethoscope.interactors.interactors.HasInteractedVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.interactors.sleep_depriver_interactor">
+<span id="ethoscope-interactors-sleep-depriver-interactor-module"></span><h2>ethoscope.interactors.sleep_depriver_interactor module<a class="headerlink" href="#module-ethoscope.interactors.sleep_depriver_interactor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.interactors.sleep_depriver_interactor.IsMovingInteractor">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.sleep_depriver_interactor.</code><code class="descname">IsMovingInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em>, <em>velocity_threshold=0.006</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/sleep_depriver_interactor.html#IsMovingInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.sleep_depriver_interactor.IsMovingInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.interactors.interactors.BaseInteractor" title="ethoscope.interactors.interactors.BaseInteractor"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.interactors.interactors.BaseInteractor</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.sleep_depriver_interactor.</code><code class="descname">SleepDepInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em>, <em>velocity_threshold=0.006</em>, <em>min_inactive_time=120</em>, <em>start_datetime=0</em>, <em>end_datetime=9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/sleep_depriver_interactor.html#SleepDepInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.interactors.sleep_depriver_interactor.IsMovingInteractor" title="ethoscope.interactors.sleep_depriver_interactor.IsMovingInteractor"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.interactors.sleep_depriver_interactor.IsMovingInteractor</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor.description">
+<code class="descname">description</code><em class="property"> = {'overview': 'An interactor to sleep deprive an animal using servo motor. See http://todo/fixme.html', 'arguments': [{'description': 'The minimal velocity that counts as movement', 'min': 0.0, 'default': 0.006, 'max': 1.0, 'step': 0.0001, 'type': 'number', 'name': 'velocity_threshold'}, {'description': 'The minimal time after which an inactive animal is awaken', 'min': 1, 'default': 120, 'max': 43200, 'step': 1, 'type': 'number', 'name': 'min_inactive_time'}, {'default': 0, 'type': 'datetime', 'name': 'start_datetime', 'description': 'When sleep deprivation is to be started'}, {'default': 9223372036854775807, 'type': 'datetime', 'name': 'end_datetime', 'description': 'When sleep deprivation is to be ended'}]}</em><a class="headerlink" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor.description" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.interactors">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ethoscope.interactors" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ethoscope.trackers.html" title="ethoscope.trackers package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ethoscope 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Quentin Geissmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

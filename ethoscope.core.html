@@ -1,0 +1,491 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ethoscope.core package &mdash; ethoscope 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ethoscope 1.0 documentation" href="index.html" />
+    <link rel="next" title="ethoscope.rois package" href="ethoscope.rois.html" />
+    <link rel="prev" title="Welcome to ethoscope’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ethoscope.rois.html" title="ethoscope.rois package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to ethoscope’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ethoscope 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ethoscope.core package</a><ul>
+<li><a class="reference internal" href="#module-ethoscope.core.monitor">ethoscope.core.monitor module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.core.tracking_unit">ethoscope.core.tracking_unit module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.core.variables">ethoscope.core.variables module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to ethoscope&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ethoscope.rois.html"
+                        title="next chapter">ethoscope.rois package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ethoscope.core.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ethoscope-core-package">
+<h1>ethoscope.core package<a class="headerlink" href="#ethoscope-core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-ethoscope.core.monitor">
+<span id="ethoscope-core-monitor-module"></span><h2>ethoscope.core.monitor module<a class="headerlink" href="#module-ethoscope.core.monitor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.core.monitor.Monitor">
+<em class="property">class </em><code class="descclassname">ethoscope.core.monitor.</code><code class="descname">Monitor</code><span class="sig-paren">(</span><em>camera</em>, <em>tracker_class</em>, <em>rois=None</em>, <em>interactors=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/monitor.html#Monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.monitor.Monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Class to orchestrate the tracking of multiple objects. It is orchestrates, in order, the following actions:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Requesting raw frames (delegated to <a class="reference internal" href="ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.BaseCamera" title="ethoscope.hardware.input.cameras.BaseCamera"><code class="xref py py-class docutils literal"><span class="pre">BaseCamera</span></code></a>)</li>
+<li>Cutting frame portions according to the ROI layout (delegated to <a class="reference internal" href="#ethoscope.core.tracking_unit.TrackingUnit" title="ethoscope.core.tracking_unit.TrackingUnit"><code class="xref py py-class docutils literal"><span class="pre">TrackingUnit</span></code></a>).</li>
+<li>Detecting animals and computing their positions and other variables (delegated to <a class="reference internal" href="ethoscope.trackers.html#ethoscope.trackers.trackers.BaseTracker" title="ethoscope.trackers.trackers.BaseTracker"><code class="xref py py-class docutils literal"><span class="pre">BaseTracker</span></code></a>).</li>
+<li>Using computed variables to interact physically with the animals (delegated to <a class="reference internal" href="ethoscope.rois.html#ethoscope.rois.roi_builders.ROI" title="ethoscope.rois.roi_builders.ROI"><code class="xref py py-class docutils literal"><span class="pre">ROI</span></code></a>).</li>
+<li>Drawing results on a frame, optionally saving video (delegated to <a class="reference internal" href="ethoscope.drawers.html#ethoscope.drawers.drawers.BaseDrawer" title="ethoscope.drawers.drawers.BaseDrawer"><code class="xref py py-class docutils literal"><span class="pre">BaseDrawer</span></code></a>).</li>
+<li>Saving the result of tracking in a database (delegated to <a class="reference internal" href="ethoscope.utils.html#ethoscope.utils.io.ResultWriter" title="ethoscope.utils.io.ResultWriter"><code class="xref py py-class docutils literal"><span class="pre">ResultWriter</span></code></a>).</li>
+</ul>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>camera</strong> (<a class="reference internal" href="ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.BaseCamera" title="ethoscope.hardware.input.cameras.BaseCamera"><code class="xref py py-class docutils literal"><span class="pre">BaseCamera</span></code></a>) &#8211; a camera object responsible of acquiring frames and associated time stamps.</li>
+<li><strong>tracker_class</strong> (<em>class</em>) &#8211; The class that will be used for tracking. It must inherit from <a class="reference internal" href="ethoscope.trackers.html#ethoscope.trackers.trackers.BaseTracker" title="ethoscope.trackers.trackers.BaseTracker"><code class="xref py py-class docutils literal"><span class="pre">BaseTracker</span></code></a></li>
+<li><strong>rois</strong> (list(<a class="reference internal" href="ethoscope.rois.html#ethoscope.rois.roi_builders.ROI" title="ethoscope.rois.roi_builders.ROI"><code class="xref py py-class docutils literal"><span class="pre">ROI</span></code></a>)) &#8211; A list of region of interest.</li>
+<li><strong>interactors</strong> &#8211; The class that will be used to analyse the position of the object and interact with the system/hardware.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="ethoscope.core.monitor.Monitor.last_frame_idx">
+<code class="descname">last_frame_idx</code><a class="headerlink" href="#ethoscope.core.monitor.Monitor.last_frame_idx" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The number of the last acquired frame.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.monitor.Monitor.last_positions">
+<code class="descname">last_positions</code><a class="headerlink" href="#ethoscope.core.monitor.Monitor.last_positions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The last positions (and other recorded variables) of all detected animals</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/2.7/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.monitor.Monitor.last_time_stamp">
+<code class="descname">last_time_stamp</code><a class="headerlink" href="#ethoscope.core.monitor.Monitor.last_time_stamp" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The time, in seconds, since monitoring started running. It will be 0 if the monitor is not running yet.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ethoscope.core.monitor.Monitor.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>result_writer=None</em>, <em>drawer=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/monitor.html#Monitor.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.monitor.Monitor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the monitor indefinitely.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>result_writer</strong> (<a class="reference internal" href="ethoscope.utils.html#ethoscope.utils.io.ResultWriter" title="ethoscope.utils.io.ResultWriter"><code class="xref py py-class docutils literal"><span class="pre">ResultWriter</span></code></a>) &#8211; A result writer used to control how data are saved. <cite>None</cite> means no results will be saved.</li>
+<li><strong>drawer</strong> (<a class="reference internal" href="ethoscope.drawers.html#ethoscope.drawers.drawers.BaseDrawer" title="ethoscope.drawers.drawers.BaseDrawer"><code class="xref py py-class docutils literal"><span class="pre">BaseDrawer</span></code></a>) &#8211; A drawer to plot the data on frames, display frames and/or save videos. <cite>None</cite> means none of the aforementioned actions will performed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ethoscope.core.monitor.Monitor.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/monitor.html#Monitor.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.monitor.Monitor.stop" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Interrupt the <cite>run</cite> method. This is meant to be called by another thread to stop monitoring.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.core.tracking_unit">
+<span id="ethoscope-core-tracking-unit-module"></span><h2>ethoscope.core.tracking_unit module<a class="headerlink" href="#module-ethoscope.core.tracking_unit" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.core.tracking_unit.TrackingUnit">
+<em class="property">class </em><code class="descclassname">ethoscope.core.tracking_unit.</code><code class="descname">TrackingUnit</code><span class="sig-paren">(</span><em>tracking_algo_class</em>, <em>roi</em>, <em>interactor=None</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/tracking_unit.html#TrackingUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.tracking_unit.TrackingUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.core.tracking_unit.TrackingUnit.get_last_position">
+<code class="descname">get_last_position</code><span class="sig-paren">(</span><em>absolute=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/tracking_unit.html#TrackingUnit.get_last_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.tracking_unit.TrackingUnit.get_last_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.tracking_unit.TrackingUnit.interactor">
+<code class="descname">interactor</code><a class="headerlink" href="#ethoscope.core.tracking_unit.TrackingUnit.interactor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.tracking_unit.TrackingUnit.roi">
+<code class="descname">roi</code><a class="headerlink" href="#ethoscope.core.tracking_unit.TrackingUnit.roi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.core.variables">
+<span id="ethoscope-core-variables-module"></span><h2>ethoscope.core.variables module<a class="headerlink" href="#module-ethoscope.core.variables" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.core.variables.BoolVariableBase">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">BoolVariableBase</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#BoolVariableBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.BoolVariableBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.IntVariableBase" title="ethoscope.core.variables.IntVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.IntVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.BoolVariableBase.functional_type">
+<code class="descname">functional_type</code><em class="property"> = 'bool'</em><a class="headerlink" href="#ethoscope.core.variables.BoolVariableBase.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.BoolVariableBase.sql_data_type">
+<code class="descname">sql_data_type</code><em class="property"> = 'BOOLEAN'</em><a class="headerlink" href="#ethoscope.core.variables.BoolVariableBase.sql_data_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.DataPoint">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">DataPoint</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#DataPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.DataPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/collections.html#collections.OrderedDict" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">collections.OrderedDict</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.core.variables.DataPoint.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#DataPoint.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.DataPoint.append" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ethoscope.core.variables.DataPoint.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#DataPoint.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.DataPoint.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.DistanceIntVarBase">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">DistanceIntVarBase</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#DistanceIntVarBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.DistanceIntVarBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.IntVariableBase" title="ethoscope.core.variables.IntVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.IntVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.DistanceIntVarBase.functional_type">
+<code class="descname">functional_type</code><em class="property"> = 'distance'</em><a class="headerlink" href="#ethoscope.core.variables.DistanceIntVarBase.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.HeightVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">HeightVariable</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#HeightVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.HeightVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.DistanceIntVarBase" title="ethoscope.core.variables.DistanceIntVarBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.DistanceIntVarBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.HeightVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'h'</em><a class="headerlink" href="#ethoscope.core.variables.HeightVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.IntVariableBase">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">IntVariableBase</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#IntVariableBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.IntVariableBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.IntVariableBase.functional_type">
+<code class="descname">functional_type</code><em class="property"> = None</em><a class="headerlink" href="#ethoscope.core.variables.IntVariableBase.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.IntVariableBase.header_name">
+<code class="descname">header_name</code><em class="property"> = None</em><a class="headerlink" href="#ethoscope.core.variables.IntVariableBase.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.IntVariableBase.sql_data_type">
+<code class="descname">sql_data_type</code><em class="property"> = 'SMALLINT'</em><a class="headerlink" href="#ethoscope.core.variables.IntVariableBase.sql_data_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.IsInferredVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">IsInferredVariable</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#IsInferredVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.IsInferredVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.BoolVariableBase" title="ethoscope.core.variables.BoolVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.BoolVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.IsInferredVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'is_inferred'</em><a class="headerlink" href="#ethoscope.core.variables.IsInferredVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.PhiVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">PhiVariable</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#PhiVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.PhiVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.IntVariableBase" title="ethoscope.core.variables.IntVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.IntVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.PhiVariable.functional_type">
+<code class="descname">functional_type</code><em class="property"> = 'angle'</em><a class="headerlink" href="#ethoscope.core.variables.PhiVariable.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.PhiVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'phi'</em><a class="headerlink" href="#ethoscope.core.variables.PhiVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.RelativeVariableBase">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">RelativeVariableBase</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#RelativeVariableBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.RelativeVariableBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.DistanceIntVarBase" title="ethoscope.core.variables.DistanceIntVarBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.DistanceIntVarBase</span></code></a></p>
+<p>Variables that are expressed relatively to an origin can be converted to absolute using information form the ROI</p>
+<dl class="method">
+<dt id="ethoscope.core.variables.RelativeVariableBase.get_absolute_value">
+<code class="descname">get_absolute_value</code><span class="sig-paren">(</span><em>roi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#RelativeVariableBase.get_absolute_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.RelativeVariableBase.get_absolute_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ethoscope.core.variables.RelativeVariableBase.to_absolute">
+<code class="descname">to_absolute</code><span class="sig-paren">(</span><em>roi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#RelativeVariableBase.to_absolute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.RelativeVariableBase.to_absolute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.Strong">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">Strong</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#Strong"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.Strong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.BoolVariableBase" title="ethoscope.core.variables.BoolVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.BoolVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.Strong.header_name">
+<code class="descname">header_name</code><em class="property"> = 'am_i_strong'</em><a class="headerlink" href="#ethoscope.core.variables.Strong.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.WidthVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">WidthVariable</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#WidthVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.WidthVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.DistanceIntVarBase" title="ethoscope.core.variables.DistanceIntVarBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.DistanceIntVarBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.WidthVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'w'</em><a class="headerlink" href="#ethoscope.core.variables.WidthVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.XPosVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">XPosVariable</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#XPosVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.XPosVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.RelativeVariableBase" title="ethoscope.core.variables.RelativeVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.RelativeVariableBase</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.core.variables.XPosVariable.get_absolute_value">
+<code class="descname">get_absolute_value</code><span class="sig-paren">(</span><em>roi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#XPosVariable.get_absolute_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.XPosVariable.get_absolute_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.XPosVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'x'</em><a class="headerlink" href="#ethoscope.core.variables.XPosVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.XYDistance">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">XYDistance</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#XYDistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.XYDistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.IntVariableBase" title="ethoscope.core.variables.IntVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.IntVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.XYDistance.functional_type">
+<code class="descname">functional_type</code><em class="property"> = 'relative_distance_1e6'</em><a class="headerlink" href="#ethoscope.core.variables.XYDistance.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.XYDistance.header_name">
+<code class="descname">header_name</code><em class="property"> = 'xy_dist_log10x1000'</em><a class="headerlink" href="#ethoscope.core.variables.XYDistance.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.XorDistance">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">XorDistance</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#XorDistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.XorDistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.IntVariableBase" title="ethoscope.core.variables.IntVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.IntVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.XorDistance.functional_type">
+<code class="descname">functional_type</code><em class="property"> = 'relative_distance_1e3'</em><a class="headerlink" href="#ethoscope.core.variables.XorDistance.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.XorDistance.header_name">
+<code class="descname">header_name</code><em class="property"> = 'xor_dist'</em><a class="headerlink" href="#ethoscope.core.variables.XorDistance.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.YPosVariable">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">YPosVariable</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#YPosVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.YPosVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.RelativeVariableBase" title="ethoscope.core.variables.RelativeVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.RelativeVariableBase</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.core.variables.YPosVariable.get_absolute_value">
+<code class="descname">get_absolute_value</code><span class="sig-paren">(</span><em>roi</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/core/variables.html#YPosVariable.get_absolute_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.YPosVariable.get_absolute_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.YPosVariable.header_name">
+<code class="descname">header_name</code><em class="property"> = 'y'</em><a class="headerlink" href="#ethoscope.core.variables.YPosVariable.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.core.variables.mLogLik">
+<em class="property">class </em><code class="descclassname">ethoscope.core.variables.</code><code class="descname">mLogLik</code><a class="reference internal" href="_modules/ethoscope/core/variables.html#mLogLik"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.core.variables.mLogLik" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.core.variables.IntVariableBase" title="ethoscope.core.variables.IntVariableBase"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.core.variables.IntVariableBase</span></code></a></p>
+<dl class="attribute">
+<dt id="ethoscope.core.variables.mLogLik.functional_type">
+<code class="descname">functional_type</code><em class="property"> = 'proba'</em><a class="headerlink" href="#ethoscope.core.variables.mLogLik.functional_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ethoscope.core.variables.mLogLik.header_name">
+<code class="descname">header_name</code><em class="property"> = 'mlog_L_x1000'</em><a class="headerlink" href="#ethoscope.core.variables.mLogLik.header_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ethoscope.core" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ethoscope.rois.html" title="ethoscope.rois package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to ethoscope’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ethoscope 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Quentin Geissmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
