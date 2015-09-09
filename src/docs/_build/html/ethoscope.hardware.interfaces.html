@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ethoscope.hardware.interfaces package &mdash; ethoscope 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ethoscope 1.0 documentation" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ethoscope 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ethoscope.hardware.interfaces package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ethoscope.hardware.interfaces.arduino_api">ethoscope.hardware.interfaces.arduino_api module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.hardware.interfaces.fake_sleep_dep_interface">ethoscope.hardware.interfaces.fake_sleep_dep_interface module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.hardware.interfaces.interfaces">ethoscope.hardware.interfaces.interfaces module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.hardware.interfaces.sleep_depriver_interface">ethoscope.hardware.interfaces.sleep_depriver_interface module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.hardware.interfaces">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ethoscope.hardware.interfaces.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ethoscope-hardware-interfaces-package">
+<h1>ethoscope.hardware.interfaces package<a class="headerlink" href="#ethoscope-hardware-interfaces-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ethoscope.hardware.interfaces.arduino_api">
+<span id="ethoscope-hardware-interfaces-arduino-api-module"></span><h2>ethoscope.hardware.interfaces.arduino_api module<a class="headerlink" href="#module-ethoscope.hardware.interfaces.arduino_api" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="ethoscope.hardware.interfaces.arduino_api.NoValidPortError">
+<em class="property">exception </em><code class="descclassname">ethoscope.hardware.interfaces.arduino_api.</code><code class="descname">NoValidPortError</code><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/arduino_api.html#NoValidPortError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.arduino_api.NoValidPortError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">serial.serialutil.SerialException</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.arduino_api.SleepDepriverInterface">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.arduino_api.</code><code class="descname">SleepDepriverInterface</code><span class="sig-paren">(</span><em>port=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/arduino_api.html#SleepDepriverInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.arduino_api.SleepDepriverInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.arduino_api.SleepDepriverInterface.deprive">
+<code class="descname">deprive</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/arduino_api.html#SleepDepriverInterface.deprive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.arduino_api.SleepDepriverInterface.deprive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="ethoscope.hardware.interfaces.arduino_api.WrongSleepDepPortError">
+<em class="property">exception </em><code class="descclassname">ethoscope.hardware.interfaces.arduino_api.</code><code class="descname">WrongSleepDepPortError</code><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/arduino_api.html#WrongSleepDepPortError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.arduino_api.WrongSleepDepPortError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">serial.serialutil.SerialException</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.hardware.interfaces.fake_sleep_dep_interface">
+<span id="ethoscope-hardware-interfaces-fake-sleep-dep-interface-module"></span><h2>ethoscope.hardware.interfaces.fake_sleep_dep_interface module<a class="headerlink" href="#module-ethoscope.hardware.interfaces.fake_sleep_dep_interface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverConnection">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.fake_sleep_dep_interface.</code><code class="descname">FakeSleepDepriverConnection</code><span class="sig-paren">(</span><em>port=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/fake_sleep_dep_interface.html#FakeSleepDepriverConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverConnection.deprive">
+<code class="descname">deprive</code><span class="sig-paren">(</span><em>channel</em>, <em>dt=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/fake_sleep_dep_interface.html#FakeSleepDepriverConnection.deprive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverConnection.deprive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverInterface">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.fake_sleep_dep_interface.</code><code class="descname">FakeSleepDepriverInterface</code><span class="sig-paren">(</span><em>port='/dev/ttyUSB0'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/fake_sleep_dep_interface.html#FakeSleepDepriverInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface" title="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverSubProcess">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.fake_sleep_dep_interface.</code><code class="descname">FakeSleepDepriverSubProcess</code><span class="sig-paren">(</span><em>queue</em>, <em>fake=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/fake_sleep_dep_interface.html#FakeSleepDepriverSubProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.fake_sleep_dep_interface.FakeSleepDepriverSubProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess" title="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.hardware.interfaces.interfaces">
+<span id="ethoscope-hardware-interfaces-interfaces-module"></span><h2>ethoscope.hardware.interfaces.interfaces module<a class="headerlink" href="#module-ethoscope.hardware.interfaces.interfaces" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.interfaces.BaseInterface">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.interfaces.</code><code class="descname">BaseInterface</code><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/interfaces.html#BaseInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.interfaces.BaseInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.interfaces.BaseInterface.interact">
+<code class="descname">interact</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/interfaces.html#BaseInterface.interact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.interfaces.BaseInterface.interact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.interfaces.DefaultInterface">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.interfaces.</code><code class="descname">DefaultInterface</code><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/interfaces.html#DefaultInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.interfaces.DefaultInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.interfaces.DefaultInterface.interact">
+<code class="descname">interact</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/interfaces.html#DefaultInterface.interact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.interfaces.DefaultInterface.interact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.hardware.interfaces.sleep_depriver_interface">
+<span id="ethoscope-hardware-interfaces-sleep-depriver-interface-module"></span><h2>ethoscope.hardware.interfaces.sleep_depriver_interface module<a class="headerlink" href="#module-ethoscope.hardware.interfaces.sleep_depriver_interface" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.NoValidPortError">
+<em class="property">exception </em><code class="descclassname">ethoscope.hardware.interfaces.sleep_depriver_interface.</code><code class="descname">NoValidPortError</code><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#NoValidPortError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.NoValidPortError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">serial.serialutil.SerialException</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.sleep_depriver_interface.</code><code class="descname">SimpleLynxMotionConnection</code><span class="sig-paren">(</span><em>port=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SimpleLynxMotionConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/2.7/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection.move_to_angle">
+<code class="descname">move_to_angle</code><span class="sig-paren">(</span><em>idx</em>, <em>angle=0.0</em>, <em>time=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SimpleLynxMotionConnection.move_to_angle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection.move_to_angle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.sleep_depriver_interface.</code><code class="descname">SleepDepriverConnection</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection" title="ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.deprive">
+<code class="descname">deprive</code><span class="sig-paren">(</span><em>channel</em>, <em>dt=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverConnection.deprive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.deprive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.warm_up">
+<code class="descname">warm_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverConnection.warm_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.warm_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.sleep_depriver_interface.</code><code class="descname">SleepDepriverInterface</code><span class="sig-paren">(</span><em>port='/dev/ttyUSB0'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.hardware.interfaces.interfaces.BaseInterface" title="ethoscope.hardware.interfaces.interfaces.BaseInterface"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.hardware.interfaces.interfaces.BaseInterface</span></code></a></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface.interact">
+<code class="descname">interact</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverInterface.interact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface.interact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess">
+<em class="property">class </em><code class="descclassname">ethoscope.hardware.interfaces.sleep_depriver_interface.</code><code class="descname">SleepDepriverSubProcess</code><span class="sig-paren">(</span><em>queue</em>, <em>fake=False</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverSubProcess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">multiprocessing.process.Process</span></code></p>
+<dl class="method">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess.run">
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#SleepDepriverSubProcess.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="ethoscope.hardware.interfaces.sleep_depriver_interface.WrongSleepDepPortError">
+<em class="property">exception </em><code class="descclassname">ethoscope.hardware.interfaces.sleep_depriver_interface.</code><code class="descname">WrongSleepDepPortError</code><a class="reference internal" href="_modules/ethoscope/hardware/interfaces/sleep_depriver_interface.html#WrongSleepDepPortError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.interfaces.sleep_depriver_interface.WrongSleepDepPortError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">serial.serialutil.SerialException</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ethoscope.hardware.interfaces">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ethoscope.hardware.interfaces" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ethoscope 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Quentin Geissmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

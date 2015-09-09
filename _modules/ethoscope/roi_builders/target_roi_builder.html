@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ethoscope.roi_builders.target_roi_builder &mdash; ethoscope 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ethoscope 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ethoscope 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ethoscope.roi_builders.target_roi_builder</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">ethoscope.roi_builders.roi_builders</span> <span class="kn">import</span> <span class="n">BaseROIBuilder</span>
+<span class="kn">from</span> <span class="nn">ethoscope.core.roi</span> <span class="kn">import</span> <span class="n">ROI</span>
+<span class="kn">from</span> <span class="nn">ethoscope.utils.debug</span> <span class="kn">import</span> <span class="n">EthoscopeException</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+
+<div class="viewcode-block" id="TargetGridROIBuilder"><a class="viewcode-back" href="../../../ethoscope.roi_builders.html#ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder">[docs]</a><span class="k">class</span> <span class="nc">TargetGridROIBuilder</span><span class="p">(</span><span class="n">BaseROIBuilder</span><span class="p">):</span>
+
+    <span class="n">_adaptive_med_rad</span> <span class="o">=</span> <span class="mf">0.10</span>
+    <span class="n">_expected__min_target_dist</span> <span class="o">=</span> <span class="mi">10</span> <span class="c"># the minimal distance between two targets, in &#39;target diameter&#39;</span>
+    <span class="n">_n_rows</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">_n_cols</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">_top_margin</span> <span class="o">=</span>  <span class="mi">0</span>
+    <span class="n">_bottom_margin</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_left_margin</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_right_margin</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">_vertical_fill</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;A flexible ROI builder that allows users to select parameters for the ROI layout.&quot;</span>
+                               <span class="s">&quot;Lengths are relative to the distance between the two bottom targets (width)&quot;</span><span class="p">,</span>
+                    <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;n_cols&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The number of columns&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;n_rows&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The number of rows&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;top_margin&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The vertical distance between the middle of the top ROIs and the middle of the top target.&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;bottom_margin&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Same as top_margin, but for the bottom.&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;right_margin&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Same as top_margin, but for the right.&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;left_margin&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Same as top_margin, but for the left.&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;horizontal_fill&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The proportion of the grid space user by the roi, horizontally.&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="o">.</span><span class="mo">001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;left_margin&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;Same as horizontal_margin, but vertically.&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.90</span><span class="p">}</span>
+                                   <span class="p">]}</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">top_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bottom_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">left_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">horizontal_fill</span><span class="o">=.</span><span class="mi">9</span><span class="p">,</span> <span class="n">vertical_fill</span><span class="o">=.</span><span class="mi">9</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This roi builder uses three black cirles drawn on the arena (targets) to align a grid layout:</span>
+<span class="sd">        IMAGE HERE</span>
+
+<span class="sd">        :param n_rows: The number of rows in the grid</span>
+<span class="sd">        :type n_rows: int</span>
+<span class="sd">        :param n_cols: The number of columns</span>
+<span class="sd">        :type n_cols: int</span>
+<span class="sd">        :param top_margin: The vertical distance between the middle of the top ROIs and the middle of the top target</span>
+<span class="sd">        :type top_margin: float</span>
+<span class="sd">        :param bottom_margin: same as top_margin, but for the bottom.</span>
+<span class="sd">        :type bottom_margin: float</span>
+<span class="sd">        :param left_margin: same as top_margin, but for the left side.</span>
+<span class="sd">        :type left_margin:float</span>
+<span class="sd">        :param right_margin: same as top_margin, but for the right side.</span>
+<span class="sd">        :type right_margin: float</span>
+<span class="sd">        :param horizontal_fill: The proportion of the grid space user by the roi, horizontally (between 0 and 1).</span>
+<span class="sd">        :type horizontal_fill: float</span>
+<span class="sd">        :param vertical_fill: same as vertical_fill, but horizontally</span>
+<span class="sd">        :type vertical_fill: float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_rows</span> <span class="o">=</span> <span class="n">n_rows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_cols</span> <span class="o">=</span> <span class="n">n_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_margin</span> <span class="o">=</span>  <span class="n">top_margin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_margin</span> <span class="o">=</span> <span class="n">bottom_margin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_left_margin</span> <span class="o">=</span> <span class="n">left_margin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_right_margin</span> <span class="o">=</span> <span class="n">right_margin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="n">horizontal_fill</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_fill</span> <span class="o">=</span> <span class="n">vertical_fill</span>
+        <span class="c"># if self._vertical_fill is None:</span>
+        <span class="c">#     self._vertical_fill = self._horizontal_fill</span>
+        <span class="c"># if self._right_margin is None:</span>
+        <span class="c">#     self._right_margin = self._left_margin</span>
+        <span class="c"># if self._bottom_margin is None:</span>
+        <span class="c">#     self._bottom_margin = self._top_margin</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TargetGridROIBuilder</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_find_blobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">scoring_fun</span><span class="p">):</span>
+        <span class="n">grey</span><span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">im</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+        <span class="n">rad</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adaptive_med_rad</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">rad</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rad</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">med</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">grey</span><span class="p">)</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mi">255</span><span class="o">/</span><span class="p">(</span><span class="n">med</span><span class="p">)</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">grey</span><span class="p">,</span><span class="n">scale</span><span class="p">,</span><span class="n">dst</span><span class="o">=</span><span class="n">grey</span><span class="p">)</span>
+        <span class="nb">bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">grey</span><span class="p">)</span>
+        <span class="n">score_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">grey</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY_INV</span><span class="p">,</span><span class="nb">bin</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="n">contours</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="nb">bin</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">RETR_EXTERNAL</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">CV_CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+            <span class="nb">bin</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">scoring_fun</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">im</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="nb">bin</span><span class="p">,[</span><span class="n">c</span><span class="p">],</span><span class="mi">0</span><span class="p">,</span><span class="n">score</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">bin</span><span class="p">,</span> <span class="n">score_map</span><span class="p">,</span><span class="n">score_map</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">score_map</span>
+
+    <span class="k">def</span> <span class="nf">_make_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_col</span><span class="p">,</span> <span class="n">n_row</span><span class="p">,</span>
+              <span class="n">top_margin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">bottom_margin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+              <span class="n">left_margin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">right_margin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+              <span class="n">horizontal_fill</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">vertical_fill</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+
+        <span class="n">y_positions</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_row</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">top_margin</span><span class="o">-</span><span class="n">bottom_margin</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n_row</span><span class="p">)</span> <span class="o">+</span> <span class="n">top_margin</span>
+        <span class="n">x_positions</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_col</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">left_margin</span><span class="o">-</span><span class="n">right_margin</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n_col</span><span class="p">)</span> <span class="o">+</span> <span class="n">left_margin</span>
+        <span class="n">all_centres</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">x_positions</span><span class="p">,</span> <span class="n">y_positions</span><span class="p">)]</span>
+
+        <span class="n">sign_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="p">])</span>
+        <span class="n">xy_size_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">horizontal_fill</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n_col</span><span class="p">),</span> <span class="n">vertical_fill</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">n_row</span><span class="p">)])</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">rectangles</span> <span class="o">=</span> <span class="p">[</span><span class="n">sign_mat</span> <span class="o">*</span><span class="n">xy_size_vec</span> <span class="o">+</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_centres</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">rectangles</span>
+
+
+    <span class="k">def</span> <span class="nf">_points_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="p">,</span> <span class="n">y1</span>  <span class="o">=</span> <span class="n">pt1</span>
+        <span class="n">x2</span> <span class="p">,</span> <span class="n">y2</span>  <span class="o">=</span> <span class="n">pt2</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_score_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">contour</span><span class="p">,</span> <span class="n">im</span><span class="p">):</span>
+
+        <span class="n">area</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
+        <span class="n">perim</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">arcLength</span><span class="p">(</span><span class="n">contour</span><span class="p">,</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">perim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">circul</span> <span class="o">=</span>  <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">area</span> <span class="o">/</span> <span class="n">perim</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="n">circul</span> <span class="o">&lt;</span> <span class="o">.</span><span class="mi">8</span><span class="p">:</span> <span class="c"># fixme magic number</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_find_target_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_blobs</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_score_targets</span><span class="p">)</span>
+        <span class="nb">bin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="nb">map</span><span class="p">)</span>
+
+        <span class="c"># as soon as we have three objects, we stop</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="nb">map</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">THRESH_BINARY</span>  <span class="p">,</span><span class="nb">bin</span><span class="p">)</span>
+            <span class="n">contours</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">findContours</span><span class="p">(</span><span class="nb">bin</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">RETR_EXTERNAL</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">CV_CHAIN_APPROX_SIMPLE</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)</span> <span class="o">&lt;</span><span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">EthoscopeException</span><span class="p">(</span><span class="s">&quot;There should be three targets. Only </span><span class="si">%i</span><span class="s"> objects have been found&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)),</span> <span class="n">img</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">contours</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="n">target_diams</span> <span class="o">=</span> <span class="p">[</span><span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">c</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">]</span>
+
+        <span class="n">mean_diam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">target_diams</span><span class="p">)</span>
+        <span class="n">mean_sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">target_diams</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mean_sd</span><span class="o">/</span><span class="n">mean_diam</span> <span class="o">&gt;</span> <span class="mf">0.10</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EthoscopeException</span><span class="p">(</span><span class="s">&quot;Too much variation in the diameter of the targets. Something must be wrong since all target should have the same size&quot;</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+
+        <span class="n">src_points</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">contours</span><span class="p">:</span>
+            <span class="n">moms</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">moments</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">x</span> <span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">moms</span><span class="p">[</span><span class="s">&quot;m10&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">moms</span><span class="p">[</span><span class="s">&quot;m00&quot;</span><span class="p">],</span>  <span class="n">moms</span><span class="p">[</span><span class="s">&quot;m01&quot;</span><span class="p">]</span><span class="o">/</span><span class="n">moms</span><span class="p">[</span><span class="s">&quot;m00&quot;</span><span class="p">]</span>
+            <span class="n">src_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="n">a</span> <span class="p">,</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">src_points</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="p">)]</span>
+
+        <span class="n">dists</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_points_distance</span><span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">]</span>
+        <span class="c"># that is the AC pair</span>
+        <span class="n">hypo_vertices</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dists</span><span class="p">)]</span>
+
+        <span class="c"># this is B : the only point not in (a,c)</span>
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">src_points</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">hypo_vertices</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">sorted_b</span> <span class="o">=</span> <span class="n">sp</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">src_points</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sorted_b</span> <span class="ow">is</span> <span class="n">sp</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c"># b-c is the largest distance, so we can infer what point is c</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_points_distance</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="n">sorted_b</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dist</span><span class="p">:</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_points_distance</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="n">sorted_b</span><span class="p">)</span>
+                <span class="n">sorted_c</span> <span class="o">=</span> <span class="n">sp</span>
+
+        <span class="c"># the remaining point is a</span>
+        <span class="n">sorted_a</span> <span class="o">=</span> <span class="p">[</span><span class="n">sp</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">src_points</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">sp</span> <span class="ow">is</span> <span class="n">sorted_b</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sp</span> <span class="ow">is</span> <span class="n">sorted_c</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sorted_src_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sorted_a</span><span class="p">,</span> <span class="n">sorted_b</span><span class="p">,</span> <span class="n">sorted_c</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sorted_src_pts</span>
+
+    <span class="k">def</span> <span class="nf">_rois_from_img</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">img</span><span class="p">):</span>
+        <span class="n">sorted_src_pts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_target_coordinates</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+        <span class="n">dst_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                               <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+                               <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">wrap_mat</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getAffineTransform</span><span class="p">(</span><span class="n">dst_points</span><span class="p">,</span> <span class="n">sorted_src_pts</span><span class="p">)</span>
+
+        <span class="n">rectangles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rows</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_top_margin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_margin</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_left_margin</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_right_margin</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_horizontal_fill</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vertical_fill</span><span class="p">)</span>
+
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">wrap_mat</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">sorted_src_pts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c"># point 1 is the ref, at 0,0</span>
+        <span class="n">rois</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rectangles</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">mapped_rectangle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">wrap_mat</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">mapped_rectangle</span> <span class="o">-=</span> <span class="n">shift</span>
+            <span class="n">ct</span> <span class="o">=</span> <span class="n">mapped_rectangle</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="n">cv2</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,[</span><span class="n">ct</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">cv2</span><span class="o">.</span><span class="n">CV_AA</span><span class="p">)</span>
+            <span class="n">rois</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ROI</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+            <span class="c"># cv2.imshow(&quot;dbg&quot;,img)</span>
+            <span class="c"># cv2.waitKey(0)</span>
+        <span class="k">return</span> <span class="n">rois</span>
+
+</div>
+<div class="viewcode-block" id="SleepMonitorWithTargetROIBuilder"><a class="viewcode-back" href="../../../ethoscope.roi_builders.html#ethoscope.roi_builders.target_roi_builder.SleepMonitorWithTargetROIBuilder">[docs]</a><span class="k">class</span> <span class="nc">SleepMonitorWithTargetROIBuilder</span><span class="p">(</span><span class="n">TargetGridROIBuilder</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to build ROIs for a two-columns, ten-rows for the  `sleep monitor tube holder arena &lt;todo&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default sleep monitor arena with ten rows of two tubes.&quot;</span><span class="p">,</span>
+                    <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="n">_n_rows</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">_n_cols</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">_top_margin</span> <span class="o">=</span>  <span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span>
+    <span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">9</span>
+    <span class="n">_vertical_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">7</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SleepMonitorWithTargetROIBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">n_rows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                               <span class="n">n_cols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                               <span class="n">top_margin</span><span class="o">=</span><span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span><span class="p">,</span>
+                                                               <span class="n">bottom_margin</span> <span class="o">=</span><span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span><span class="p">,</span>
+                                                               <span class="n">horizontal_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span>
+                                                               <span class="n">vertical_fill</span><span class="o">=</span> <span class="o">.</span><span class="mi">7</span>
+                                                               <span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="OlfactionAssayROIBuilder"><a class="viewcode-back" href="../../../ethoscope.roi_builders.html#ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder">[docs]</a><span class="k">class</span> <span class="nc">OlfactionAssayROIBuilder</span><span class="p">(</span><span class="n">TargetGridROIBuilder</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to build ROIs for a one-columns, ten-rows for the  `olfactory response arena &lt;todo&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default odor assay  roi layout with ten rows of single tubes.&quot;</span><span class="p">,</span>
+                    <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">_n_rows</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">_n_cols</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">_top_margin</span> <span class="o">=</span>  <span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span>
+    <span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">9</span>
+    <span class="n">_vertical_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">7</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ethoscope 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Quentin Geissmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
