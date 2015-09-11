@@ -81,12 +81,20 @@
     <span class="k">pass</span>
 </div>
 <div class="viewcode-block" id="SimpleLynxMotionConnection"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection">[docs]</a><span class="k">class</span> <span class="nc">SimpleLynxMotionConnection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
     <span class="n">_baud</span> <span class="o">=</span> <span class="mi">115200</span>
     <span class="n">_min_angle_pulse</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">800.</span><span class="p">)</span>
     <span class="n">_max_angle_pulse</span> <span class="o">=</span> <span class="p">(</span><span class="mf">150.</span><span class="p">,</span><span class="mf">2400.</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to connect and abstract the Lynx Motion servo controller.</span>
+
+<span class="sd">        :param port: the serial port to use. Automatic detection if ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Connecting to Lynx motion serial port...&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span> <span class="o">=</span> <span class="bp">None</span>
@@ -160,24 +168,54 @@
         <span class="k">return</span> <span class="n">pulse</span>
 
 <div class="viewcode-block" id="SimpleLynxMotionConnection.move_to_angle"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SimpleLynxMotionConnection.move_to_angle">[docs]</a>    <span class="k">def</span> <span class="nf">move_to_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="p">,</span><span class="n">angle</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span><span class="n">time</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move a given servo to a given angle in a given time.</span>
+
+<span class="sd">        :param idx: the number of the servo to be moved</span>
+<span class="sd">        :type idx: int</span>
+<span class="sd">        :param angle: the angle (between 0 and 180) to move to</span>
+<span class="sd">        :type angle: int</span>
+<span class="sd">        :param time: the time it takes to go from the original angle to the new one (in ms)</span>
+<span class="sd">        :type time: int</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;idx must be greater or equal to one&quot;</span><span class="p">)</span>
         <span class="n">pulse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_to_pulse</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
         <span class="n">instruction</span> <span class="o">=</span> <span class="s">&quot;#</span><span class="si">%i</span><span class="s"> P</span><span class="si">%i</span><span class="s"> T</span><span class="si">%i</span><span class="se">\r</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span><span class="n">pulse</span><span class="p">,</span><span class="n">time</span><span class="p">)</span>
         <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">instruction</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">o</span>
+
 </div></div>
 <div class="viewcode-block" id="SleepDepriverConnection"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection">[docs]</a><span class="k">class</span> <span class="nc">SleepDepriverConnection</span><span class="p">(</span><span class="n">SimpleLynxMotionConnection</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to connect to the sleep depriver module.</span>
+
+<span class="sd">        :param args: additional arguments to be passed to the base class</span>
+<span class="sd">        :param kwargs: additional keyword arguments to be passed to the base class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SleepDepriverConnection</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warm_up</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SleepDepriverConnection.warm_up"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.warm_up">[docs]</a>    <span class="k">def</span> <span class="nf">warm_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Warm up the module. That is move each tube three times in order to check setup and that no servo has failed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">deprive</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="SleepDepriverConnection.deprive"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection.deprive">[docs]</a>    <span class="k">def</span> <span class="nf">deprive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">channel</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sleep deprive an animal by rotating its tube.</span>
+
+<span class="sd">        :param channel: The chanel to use (i.e. the number of the servo)</span>
+<span class="sd">        :typechannel: int</span>
+<span class="sd">        :param dt: The time it takes to go from 0 to 180 degrees (inms)</span>
+<span class="sd">        :type dt: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">move_to_angle</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_angle_pulse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">dt</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">move_to_angle</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_angle_pulse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">dt</span><span class="p">)</span>
@@ -186,7 +224,17 @@
 <div class="viewcode-block" id="SleepDepriverSubProcess"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverSubProcess">[docs]</a><span class="k">class</span> <span class="nc">SleepDepriverSubProcess</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
     <span class="n">_DepriverConnectionClass</span> <span class="o">=</span> <span class="n">SleepDepriverConnection</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">queue</span><span class="p">,</span> <span class="n">fake</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">queue</span><span class="p">,</span>  <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to run delegate sleep deprivation connection (:class:`~ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverConnection`).</span>
+<span class="sd">        To a parallel process. This way, the execution of the sleep depriver connection instructions are non-blocking.</span>
+
+<span class="sd">        :param queue: A multiprocessing queue to pass instructions.</span>
+<span class="sd">        :type queue: :class:`~multiprocessing.JoinableQueue`</span>
+<span class="sd">        :param args: additional arguments</span>
+<span class="sd">        :param kwargs: additional keyword arguments</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">queue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
@@ -230,8 +278,15 @@
 
 </div></div>
 <div class="viewcode-block" id="SleepDepriverInterface"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.sleep_depriver_interface.SleepDepriverInterface">[docs]</a><span class="k">class</span> <span class="nc">SleepDepriverInterface</span><span class="p">(</span><span class="n">BaseInterface</span><span class="p">):</span>
+
     <span class="n">_SubProcessClass</span> <span class="o">=</span> <span class="n">SleepDepriverSubProcess</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">port</span><span class="o">=</span><span class="s">&quot;/dev/ttyUSB0&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class implementing the interface to the sleep depriver module, which rotate tubes to sleep deprive animals.</span>
+
+<span class="sd">        :param port: the serial port on which the device is plugged. If ``None`` automatic port detection is attempted.</span>
+<span class="sd">        :type port: str or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">JoinableQueue</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_interface</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SubProcessClass</span><span class="p">(</span><span class="n">queue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span> <span class="c"># fixme, auto port detection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_dep_interface</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>

@@ -125,7 +125,11 @@
 <span class="c">#</span>
 
 <div class="viewcode-block" id="DescribedObject"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.description.DescribedObject">[docs]</a><span class="k">class</span> <span class="nc">DescribedObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
 </pre></div></div>
 
           </div>

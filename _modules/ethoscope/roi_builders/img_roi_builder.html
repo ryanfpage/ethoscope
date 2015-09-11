@@ -73,17 +73,18 @@
 
 
 <div class="viewcode-block" id="ImgMaskROIBuilder"><a class="viewcode-back" href="../../../ethoscope.roi_builders.html#ethoscope.roi_builders.img_roi_builder.ImgMaskROIBuilder">[docs]</a><span class="k">class</span> <span class="nc">ImgMaskROIBuilder</span><span class="p">(</span><span class="n">BaseROIBuilder</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to build rois from greyscale image file.</span>
-<span class="sd">    Each continuous region is used as a ROI.</span>
-<span class="sd">    The greyscale value inside the ROI determines it&#39;s value.</span>
-
-<span class="sd">    IMAGE HERE</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to build rois from greyscale image file.</span>
+<span class="sd">        Each continuous region is used as a ROI.</span>
+<span class="sd">        The greyscale value inside the ROI determines it&#39;s value.</span>
+
+<span class="sd">        IMAGE HERE</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_mask</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">mask_path</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_LOAD_IMAGE_GRAYSCALE</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ImgMaskROIBuilder</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
 

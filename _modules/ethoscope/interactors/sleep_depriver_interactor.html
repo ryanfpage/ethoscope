@@ -79,6 +79,12 @@
     <span class="n">_hardwareInterfaceClass</span> <span class="o">=</span> <span class="n">DefaultInterface</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hardware_interface</span><span class="p">,</span> <span class="n">velocity_threshold</span><span class="o">=</span><span class="mf">0.0060</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        class implementing an interactor that decides whether an animal has moved though does nothing   accordingly.</span>
+<span class="sd">        :param hardware_interface: a default hardware interface object</span>
+<span class="sd">        :param velocity_threshold: Up to which velocity an animal is considered to be immobile</span>
+<span class="sd">        :type velocity_threshold: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_threshold</span> <span class="o">=</span> <span class="n">velocity_threshold</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">IsMovingInteractor</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">hardware_interface</span><span class="p">)</span>
@@ -108,7 +114,7 @@
             <span class="k">return</span> <span class="bp">True</span>
         <span class="k">return</span> <span class="bp">False</span>
 
-    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_decide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">has_moved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_moved</span><span class="p">()</span>
         <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span><span class="o">.</span><span class="n">times</span>
         <span class="k">if</span>  <span class="n">has_moved</span><span class="p">:</span><span class="c"># or xor_diff &gt; self._xor_speed_threshold :</span>
@@ -118,7 +124,7 @@
 
 </div>
 <div class="viewcode-block" id="SleepDepInteractor"><a class="viewcode-back" href="../../../ethoscope.interactors.html#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor">[docs]</a><span class="k">class</span> <span class="nc">SleepDepInteractor</span><span class="p">(</span><span class="n">IsMovingInteractor</span><span class="p">):</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;An interactor to sleep deprive an animal using servo motor. See http://todo/fixme.html&quot;</span><span class="p">,</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;An interactor to sleep deprive an animal using servo motor. See http://todo/fixme.html&quot;</span><span class="p">,</span>
                     <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[</span>
                                     <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="mf">0.0001</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;velocity_threshold&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The minimal velocity that counts as movement&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mf">0.0060</span><span class="p">},</span>
                                     <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">12</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;min_inactive_time&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The minimal time after which an inactive animal is awaken&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mi">120</span><span class="p">},</span>
@@ -140,6 +146,22 @@
                  <span class="n">start_datetime</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">end_datetime</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span>
                   <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A interactor to control a sleep depriver module</span>
+
+<span class="sd">        :param hardware_interface: the sleep depriver module hardware interface</span>
+<span class="sd">        :type hardware_interface: :class:`~ethoscope.hardawre.interfaces.sleep_depriver_interface.SleepDepriverInterface`</span>
+<span class="sd">        :param velocity_threshold:</span>
+<span class="sd">        :type velocity_threshold: float</span>
+<span class="sd">        :param min_inactive_time: the minimal time without motion after which an animal should be disturbed (in seconds)</span>
+<span class="sd">        :type min_inactive_time: float</span>
+<span class="sd">        :param start_datetime: The unix time stamp of the start of the experiment</span>
+<span class="sd">        :type start_datetime: int</span>
+<span class="sd">        :param end_datetime: The unix time stamp of the end of the experiment</span>
+<span class="sd">        :type end_datetime: int</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_inactivity_time_threshold_ms</span> <span class="o">=</span> <span class="n">min_inactive_time</span> <span class="o">*</span><span class="mi">1000</span> <span class="c">#so we use ms internally</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_datetime</span><span class="o">=</span> <span class="n">start_datetime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end_datetime</span><span class="o">=</span> <span class="n">end_datetime</span>
@@ -154,7 +176,7 @@
         <span class="k">return</span> <span class="bp">False</span>
 
 
-    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_decide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="n">roi_id</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span><span class="o">.</span><span class="n">_roi</span><span class="o">.</span><span class="n">idx</span>
         <span class="n">now</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span><span class="o">.</span><span class="n">last_time_point</span>

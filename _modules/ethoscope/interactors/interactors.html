@@ -74,6 +74,9 @@
 
 
 <div class="viewcode-block" id="HasInteractedVariable"><a class="viewcode-back" href="../../../ethoscope.interactors.html#ethoscope.interactors.interactors.HasInteractedVariable">[docs]</a><span class="k">class</span> <span class="nc">HasInteractedVariable</span><span class="p">(</span><span class="n">BaseBoolVariable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom variable to save whether the interactor has sent instruction to its hardware interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">header_name</span> <span class="o">=</span> <span class="s">&quot;has_interacted&quot;</span>
 
 </div>
@@ -82,24 +85,51 @@
     <span class="n">_hardwareInterfaceClass</span> <span class="o">=</span> <span class="bp">None</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hardware_interface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Template class to interact with the tracked animal in a real-time feedback loop.</span>
+<span class="sd">        Derived classes must have an attribute ``_hardwareInterfaceClass`` defining the class of the</span>
+<span class="sd">        :class:`~ethoscope.hardware.interfaces.interfaces.BaseInterface` object (not on object) that instances will</span>
+<span class="sd">        share with one another.</span>
+
+<span class="sd">        In addition, they must implement a ``_decide()`` method.</span>
+
+
+<span class="sd">        :param hardware_interface: The hardware interface to use.</span>
+<span class="sd">        :type hardware_interface: :class:`~ethoscope.hardware.interfaces.interfaces.BaseInterface`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_hardware_interface</span> <span class="o">=</span> <span class="n">hardware_interface</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseInteractor.apply"><a class="viewcode-back" href="../../../ethoscope.interactors.html#ethoscope.interactors.interactors.BaseInteractor.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply this interactor. This method will:</span>
+
+<span class="sd">        1. check ``_tracker`` exists</span>
+<span class="sd">        2. decide (``_decide``) whether to interact</span>
+<span class="sd">        3. if 2. pass the interaction arguments to the hardware interface</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No tracker bound to this interactor. Use `bind_tracker()` methods&quot;</span><span class="p">)</span>
 
-        <span class="n">interact</span><span class="p">,</span> <span class="n">result</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">()</span>
+        <span class="n">interact</span><span class="p">,</span> <span class="n">result</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decide</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">interact</span> <span class="o">==</span> <span class="n">HasInteractedVariable</span><span class="p">(</span><span class="bp">True</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_interact</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">interact</span><span class="p">,</span> <span class="n">result</span>
 
-
+</div>
 <div class="viewcode-block" id="BaseInteractor.bind_tracker"><a class="viewcode-back" href="../../../ethoscope.interactors.html#ethoscope.interactors.interactors.BaseInteractor.bind_tracker">[docs]</a>    <span class="k">def</span> <span class="nf">bind_tracker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tracker</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Link a tracker to this interactor</span>
+
+<span class="sd">        :param tracker: a tracker object.</span>
+<span class="sd">        :type tracker: :class:`~ethoscope.trackers.trackers.BaseTracker`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span> <span class="o">=</span> <span class="n">tracker</span>
 </div>
-    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_decide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_interact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -107,10 +137,14 @@
 
 </div>
 <div class="viewcode-block" id="DefaultInteractor"><a class="viewcode-back" href="../../../ethoscope.interactors.html#ethoscope.interactors.interactors.DefaultInteractor">[docs]</a><span class="k">class</span> <span class="nc">DefaultInteractor</span><span class="p">(</span><span class="n">BaseInteractor</span><span class="p">):</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default sleep monitor arena with ten rows of two tubes.&quot;</span><span class="p">,</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default interactor. Simply never interacts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default &#39;interactor&#39;. To use when no hardware interface is to be used.&quot;</span><span class="p">,</span>
                     <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[]}</span>
     <span class="n">_hardwareInterfaceClass</span> <span class="o">=</span> <span class="n">DefaultInterface</span>
-    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_decide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">HasInteractedVariable</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="p">{}</span>
 </pre></div></div>

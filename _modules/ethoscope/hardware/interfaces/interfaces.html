@@ -69,15 +69,32 @@
 
 
 <div class="viewcode-block" id="BaseInterface"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.interfaces.BaseInterface">[docs]</a><span class="k">class</span> <span class="nc">BaseInterface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A template class to interface hardware. It must implement two methods: ``_warm_up()`` and ``interact()``</span>
+<span class="sd">        Typically, several :class:`~ethoscope.interactors.interactors.BaseInteractor` will share a single hardware interface.</span>
+<span class="sd">        When possible, hardware interfaces are also responsible for checking, at initialisation, that hardware is reachable.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_warm_up</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">_warm_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-<div class="viewcode-block" id="BaseInterface.interact"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.interfaces.BaseInterface.interact">[docs]</a>    <span class="k">def</span> <span class="nf">interact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BaseInterface.interact"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.interfaces.BaseInterface.interact">[docs]</a>    <span class="k">def</span> <span class="nf">interact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to request hardware interface to interact with the physical world.</span>
+<span class="sd">        Typically called by an :class:`~ethoscope.interactors.interactors.BaseInteractor`.</span>
+
+<span class="sd">        :param kwargs: keywords arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 </div></div>
 <div class="viewcode-block" id="DefaultInterface"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.interfaces.DefaultInterface">[docs]</a><span class="k">class</span> <span class="nc">DefaultInterface</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A default dummy interface that does nothing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_warm_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 <div class="viewcode-block" id="DefaultInterface.interact"><a class="viewcode-back" href="../../../../ethoscope.hardware.interfaces.html#ethoscope.hardware.interfaces.interfaces.DefaultInterface.interact">[docs]</a>    <span class="k">def</span> <span class="nf">interact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

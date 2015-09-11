@@ -109,20 +109,30 @@ This project uses, as much as possible, open hardware and software.</p>
 <div class="section" id="devices">
 <h4>Devices<a class="headerlink" href="#devices" title="Permalink to this headline">¶</a></h4>
 <p>Devices are enhanced raspeberry pi micro-computers with a camera and a wireless dongle.
-Animals lay on individual regions of an experimental arena (typically 3d printed):</p>
-<p>IMAGE HERE</p>
+Animals lay on individual regions of an experimental arena (typically 3d printed).
+Each device is a <em>standalone</em> video tracker that will preform video acquisition, real-time tracking, and data saving.</p>
+<p>This next figure shows the inside of a device (A), and an example of frame acquired with one of such devices(B).
+The left and right part of the frame shown in B represent the same arena acquired in light or dark conditions, respectively.</p>
+<img alt="_images/device.jpg" src="_images/device.jpg" />
 <p>Hardware is available on our <a class="reference external" href="https://github.com/PolygonalTree/ethoscope_hardware">hardware repository</a>.</p>
 </div>
 <div class="section" id="node">
 <h4>Node<a class="headerlink" href="#node" title="Permalink to this headline">¶</a></h4>
 <p>The <em>Node</em> is a regular computer (preferably) connected to the internet.
+Its purpose is to send instruction to devices. Form instance, it can requests devices to start, stop, update...
+It also synchronise regularly data (MySQL) from all devices on individual local files (SQLite).
 It runs a front-end bottle server allowing users to send instructions (start tracking, record video, update ...) to each devices.
-It also synchronise regularly data from all devices on individual local files.</p>
+The user interface can be used directly on the node or connected to with any web browsing device connected on the network (e.g. a phone).</p>
 </div>
 </div>
 <div class="section" id="communication-between-node-and-devices">
 <h3>Communication between node and devices<a class="headerlink" href="#communication-between-node-and-devices" title="Permalink to this headline">¶</a></h3>
-<p>IMAGE HERE</p>
+<p>The video tracking platform contains <em>multiple devices</em> and a <em>single node</em>.
+Communication between node and devices is done through a private local wireless network.
+Local network is also used by devices to synchronise their clocks with the node&#8217;s.
+Optionally, experimental data saved on the node can be mirrored on a remote drive.</p>
+<p>This is an overview of the task performed by device and node as well as how they connect to each other.</p>
+<img alt="_images/platform.png" src="_images/platform.png" />
 </div>
 <div class="section" id="software">
 <h3>Software<a class="headerlink" href="#software" title="Permalink to this headline">¶</a></h3>
@@ -156,11 +166,10 @@ we developed an <code class="docutils literal"><span class="pre">R</span></code>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ethoscope.trackers.html">ethoscope.trackers package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers.adaptive_bg_tracker">ethoscope.trackers.adaptive_bg_tracker module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers.single_roi_tracker">ethoscope.trackers.single_roi_tracker module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers.trackers">ethoscope.trackers.trackers module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers.trackers">ethoscope.trackers.trackers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers.single_roi_tracker">ethoscope.trackers.single_roi_tracker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ethoscope.trackers.html#module-ethoscope.trackers.adaptive_bg_tracker">ethoscope.trackers.adaptive_bg_tracker module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ethoscope.interactors.html">ethoscope.interactors package</a><ul>

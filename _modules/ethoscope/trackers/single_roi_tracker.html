@@ -65,6 +65,8 @@
           <div class="body" role="main">
             
   <h1>Source code for ethoscope.trackers.single_roi_tracker</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
+
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">import</span> <span class="nn">cv2</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -73,8 +75,6 @@
 <span class="kn">from</span> <span class="nn">ethoscope.trackers.adaptive_bg_tracker</span> <span class="kn">import</span> <span class="n">BackgroundModel</span>
 <span class="kn">from</span> <span class="nn">ethoscope.trackers.trackers</span> <span class="kn">import</span> <span class="n">BaseTracker</span><span class="p">,</span> <span class="n">NoPositionError</span>
 <span class="kn">from</span> <span class="nn">ethoscope.utils.img_proc</span> <span class="kn">import</span> <span class="n">merge_blobs</span>
-
-<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
 
 
 <div class="viewcode-block" id="AdaptiveBGModelOneObject"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.single_roi_tracker.AdaptiveBGModelOneObject">[docs]</a><span class="k">class</span> <span class="nc">AdaptiveBGModelOneObject</span><span class="p">(</span><span class="n">BaseTracker</span><span class="p">):</span>

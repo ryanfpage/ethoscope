@@ -74,11 +74,25 @@
 
 
 <div class="viewcode-block" id="NoPositionError"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.trackers.NoPositionError">[docs]</a><span class="k">class</span> <span class="nc">NoPositionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to abort tracking. When it is raised within the ``_find_position`` method, data is inferred from previous position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
 </div>
 <div class="viewcode-block" id="BaseTracker"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.trackers.BaseTracker">[docs]</a><span class="k">class</span> <span class="nc">BaseTracker</span><span class="p">(</span><span class="n">DescribedObject</span><span class="p">):</span>
     <span class="c"># data_point = None</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Template class for video trackers.</span>
+<span class="sd">        A video tracker locate animal in a ROI.</span>
+<span class="sd">        Derived class must implement the ``_find_position`` method.</span>
+
+<span class="sd">        :param roi: The Region Of Interest the the tracker will use to locate the animal.</span>
+<span class="sd">        :type roi: :class:`~ethoscope.rois.roi_builders.ROI`</span>
+<span class="sd">        :param data: An optional data set. For instance, it can be used for pre-trained algorithms</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_times</span> <span class="o">=</span><span class="n">deque</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
@@ -91,7 +105,18 @@
         <span class="c"># if self.data_point is None:</span>
         <span class="c">#     raise NotImplementedError(&quot;Trackers must have a DataPoint object.&quot;)</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseTracker.track"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.trackers.BaseTracker.track">[docs]</a>    <span class="k">def</span> <span class="nf">track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Locate the animal in a image, at a given time.</span>
+
+<span class="sd">        :param t: time in ms</span>
+<span class="sd">        :type t: int</span>
+<span class="sd">        :param img: the whole frame.</span>
+<span class="sd">        :type img: :class:`~numpy.ndarray`</span>
+<span class="sd">        :return: The position of the animal at time ``t``</span>
+<span class="sd">        :rtype: :class:`~ethoscope.core.data_point.DataPoint`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">sub_img</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roi</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_time_point</span> <span class="o">=</span> <span class="n">t</span>
         <span class="k">try</span><span class="p">:</span>
@@ -128,7 +153,7 @@
 
 
         <span class="k">return</span> <span class="n">point</span>
-
+</div>
     <span class="k">def</span> <span class="nf">_infer_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">None</span>
@@ -140,6 +165,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: The last few positions found by the tracker. Positions are kept for a certain duration defined by the ``_max_history_length `` attribute.</span>
+<span class="sd">        :rtype: :class:`~collection.deque`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span>
 
 <div class="viewcode-block" id="BaseTracker.xy_pos"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.trackers.BaseTracker.xy_pos">[docs]</a>    <span class="k">def</span> <span class="nf">xy_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
@@ -147,9 +176,18 @@
 </div>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">last_time_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: The last time point inputed to the tracker. This is updated even when position is inferred/no animal is found</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_time_point</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: The last few time points corresponding to :class:`~ethoscope.trackers.trackers.BaseTracker.positions`.</span>
+<span class="sd">        :rtype: :class:`~collection.deque`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span>
 
     <span class="k">def</span> <span class="nf">_find_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>

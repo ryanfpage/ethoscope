@@ -65,6 +65,8 @@
           <div class="body" role="main">
             
   <h1>Source code for ethoscope.trackers.adaptive_bg_tracker</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
+
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">log10</span>
 <span class="kn">import</span> <span class="nn">cv2</span>
@@ -76,11 +78,9 @@
 <span class="kn">from</span> <span class="nn">ethoscope.trackers.trackers</span> <span class="kn">import</span> <span class="n">BaseTracker</span><span class="p">,</span> <span class="n">NoPositionError</span>
 <span class="kn">from</span> <span class="nn">ethoscope.utils.debug</span> <span class="kn">import</span> <span class="n">EthoscopeException</span>
 
-<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
 
-
-<div class="viewcode-block" id="ObjectModel"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel">[docs]</a><span class="k">class</span> <span class="nc">ObjectModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">ObjectModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectModel"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to model, update and predict foreground object (i.e. tracked animal).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_sqrt_2_pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
@@ -110,8 +110,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_features_header</span>
 
 
-<div class="viewcode-block" id="ObjectModel.update"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">contour</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">contour</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectModel.update"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel.update">[docs]</a>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ring_buff</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring_buff_idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_features</span><span class="p">(</span><span class="n">img</span><span class="p">,</span><span class="n">contour</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ring_buff_idx</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -122,9 +122,9 @@
 
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring_buff</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_ring_buff_idx</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="ObjectModel.distance"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel.distance">[docs]</a>    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ready</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ObjectModel.distance"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel.distance">[docs]</a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ready</span><span class="p">:</span>
             <span class="n">last_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ring_buff_idx</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">last_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history_length</span>
@@ -150,9 +150,9 @@
         <span class="n">logls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">likelihoods</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">likelihoods</span><span class="p">)</span>
         <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">logls</span>
 
-</div>
-<div class="viewcode-block" id="ObjectModel.compute_features"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel.compute_features">[docs]</a>    <span class="k">def</span> <span class="nf">compute_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">contour</span><span class="p">):</span>
-        <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">contour</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ObjectModel.compute_features"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.ObjectModel.compute_features">[docs]</a>        <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">contour</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_roi_img_buff</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_roi_img_buff</span><span class="o">.</span><span class="n">shape</span> <span class="o">&lt;</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="p">:</span>
             <span class="c"># dynamically reallocate buffer if needed</span>
@@ -200,9 +200,9 @@
 
         <span class="k">return</span> <span class="n">features</span>
 
-</div></div>
-<div class="viewcode-block" id="BackgroundModel"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel">[docs]</a><span class="k">class</span> <span class="nc">BackgroundModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">BackgroundModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="BackgroundModel"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to model background. It uses a dynamic running average and support arbitrary and heterogeneous frame rates</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_half_life</span><span class="o">=</span><span class="mf">100.</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">min_half_life</span><span class="o">=</span><span class="mf">1.</span><span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">increment</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">):</span>
@@ -229,15 +229,15 @@
     <span class="k">def</span> <span class="nf">bg_img</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bg_mean</span>
 
-<div class="viewcode-block" id="BackgroundModel.increase_learning_rate"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel.increase_learning_rate">[docs]</a>    <span class="k">def</span> <span class="nf">increase_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_half_life</span>  <span class="o">/=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_increment</span>
-</div>
-<div class="viewcode-block" id="BackgroundModel.decrease_learning_rate"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel.decrease_learning_rate">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_current_half_life</span>  <span class="o">*=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_increment</span>
+    <span class="k">def</span> <span class="nf">increase_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BackgroundModel.increase_learning_rate"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel.increase_learning_rate">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_current_half_life</span>  <span class="o">/=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_increment</span>
 
-</div>
-<div class="viewcode-block" id="BackgroundModel.update"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_t</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">fg_mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_t</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">decrease_learning_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="BackgroundModel.decrease_learning_rate"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel.decrease_learning_rate">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_current_half_life</span>  <span class="o">*=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_increment</span>
+
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_t</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">fg_mask</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="BackgroundModel.update"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.BackgroundModel.update">[docs]</a>        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_t</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">EthoscopeException</span><span class="p">(</span><span class="s">&quot;Negative time interval between two consecutive frames&quot;</span><span class="p">)</span>
 
@@ -278,14 +278,22 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">last_t</span> <span class="o">=</span> <span class="n">t</span>
 
-</div></div>
-<div class="viewcode-block" id="AdaptiveBGModel"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.AdaptiveBGModel">[docs]</a><span class="k">class</span> <span class="nc">AdaptiveBGModel</span><span class="p">(</span><span class="n">BaseTracker</span><span class="p">):</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default tracker for fruit flies. One animal per ROI.&quot;</span><span class="p">,</span>
+
+<span class="k">class</span> <span class="nc">AdaptiveBGModel</span><span class="p">(</span><span class="n">BaseTracker</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="AdaptiveBGModel"><a class="viewcode-back" href="../../../ethoscope.trackers.html#ethoscope.trackers.adaptive_bg_tracker.AdaptiveBGModel">[docs]</a>    <span class="n">_description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default tracker for fruit flies. One animal per ROI.&quot;</span><span class="p">,</span>
                     <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[]}</span>
 
     <span class="n">fg_model</span> <span class="o">=</span> <span class="n">ObjectModel</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An adaptive background subtraction model to find position of one animal in one roi.</span>
+
+<span class="sd">        TODO more description here</span>
+<span class="sd">        :param roi:</span>
+<span class="sd">        :param data:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous_shape</span><span class="o">=</span><span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_object_expected_size</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c"># proportion of the roi main axis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_area</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_expected_size</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
@@ -479,11 +487,6 @@
             <span class="k">raise</span> <span class="n">NoPositionError</span>
 
 
-
-
-
-
-
         <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="p">,(</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">),</span> <span class="n">angle</span>  <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">minAreaRect</span><span class="p">(</span><span class="n">hull</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">:</span>
@@ -544,8 +547,8 @@
         <span class="n">out</span> <span class="o">=</span> <span class="n">DataPoint</span><span class="p">([</span><span class="n">x_var</span><span class="p">,</span> <span class="n">y_var</span><span class="p">,</span> <span class="n">w_var</span><span class="p">,</span> <span class="n">h_var</span><span class="p">,</span> <span class="n">phi_var</span><span class="p">,</span><span class="n">mlogl</span><span class="p">,</span><span class="n">distance</span><span class="p">,</span><span class="n">xor_dist</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous_shape</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">hull</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">out</span></div>
-</pre></div>
+        <span class="k">return</span> <span class="n">out</span>
+</pre></div></div>
 
           </div>
         </div>

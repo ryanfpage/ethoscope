@@ -88,7 +88,7 @@
 <span class="sd">        :type tracker_class: class</span>
 <span class="sd">        :param roi: A region of interest.</span>
 <span class="sd">        :type roi: :class:`~ethoscope.rois.roi_builders.ROI`.</span>
-<span class="sd">        :param interactor: an object used to pysically interact with the detected animal.</span>
+<span class="sd">        :param interactor: an object used to physically interact with the detected animal.</span>
 <span class="sd">        :type interactor: :class:`~ethoscope.interactors.interactors.BaseInteractor`.</span>
 <span class="sd">        :param args: additional arguments passed to the tracking algorithm.</span>
 <span class="sd">        :param kwargs: additional keyword arguments passed to the tracking algorithm.</span>
@@ -162,8 +162,8 @@
 <span class="sd">        :return: The resulting data point</span>
 <span class="sd">        :rtype:  :class:`~ethoscope.core.data_point.DataPoint`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">data_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">img</span><span class="p">)</span>
-        <span class="n">interact</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interactor</span><span class="p">()</span>
+        <span class="n">data_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracker</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">img</span><span class="p">)</span>
+        <span class="n">interact</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interactor</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">data_row</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">return</span>
 

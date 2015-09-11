@@ -87,6 +87,16 @@
     <span class="n">_frame_idx</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">drop_each</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_duration</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The template class to generate and use video streams.</span>
+
+
+<span class="sd">        :param drop_each: keep only ``1/`drop_each`&#39;th frame</span>
+<span class="sd">        :param max_duration: stop the video stream if ``t &gt; max_duration`` (in seconds).</span>
+<span class="sd">        :param args: additional arguments</span>
+<span class="sd">        :param kwargs: additional keyword arguments</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_drop_each</span> <span class="o">=</span> <span class="n">drop_each</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_duration</span> <span class="o">=</span> <span class="n">max_duration</span>
 
@@ -95,6 +105,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate thought consecutive frames of this camera.</span>
+
+<span class="sd">        :return: the time (in ms) and a frame (numpy array).</span>
+<span class="sd">        :rtype: (int, :class:`~numpy.ndarray`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c"># We ensure timestamps and frame index are set to 0</span>
 
@@ -107,7 +123,7 @@
                 <span class="k">break</span>
 
 
-            <span class="n">t</span><span class="p">,</span><span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_time_image</span><span class="p">()</span>
+            <span class="n">t</span><span class="p">,</span><span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_time_image</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="n">t_ms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1000</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
@@ -124,42 +140,72 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :return: The resolution of the camera W x H.</span>
+<span class="sd">        :rtype: (int, int)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the width of the returned frames</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the height of the returned frames</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-<div class="viewcode-block" id="BaseCamera.next_time_image"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.BaseCamera.next_time_image">[docs]</a>    <span class="k">def</span> <span class="nf">next_time_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_next_time_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_stamp</span><span class="p">()</span>
         <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_image</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frame_idx</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">time</span><span class="p">,</span> <span class="n">im</span>
 
 
-</div>
+
 <div class="viewcode-block" id="BaseCamera.is_last_frame"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.BaseCamera.is_last_frame">[docs]</a>    <span class="k">def</span> <span class="nf">is_last_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
     <span class="k">def</span> <span class="nf">_next_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
     <span class="k">def</span> <span class="nf">_time_stamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
 <div class="viewcode-block" id="BaseCamera.is_opened"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.BaseCamera.is_opened">[docs]</a>    <span class="k">def</span> <span class="nf">is_opened</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
 <div class="viewcode-block" id="BaseCamera.restart"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.BaseCamera.restart">[docs]</a>    <span class="k">def</span> <span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restarts a camera (also resets time).</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
 </div></div>
 <div class="viewcode-block" id="MovieVirtualCamera"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.MovieVirtualCamera">[docs]</a><span class="k">class</span> <span class="nc">MovieVirtualCamera</span><span class="p">(</span><span class="n">BaseCamera</span><span class="p">):</span>
 
-
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">use_wall_clock</span> <span class="o">=</span> <span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to acquire frames from a video file.</span>
 
+<span class="sd">        :param path: the path of the video file</span>
+<span class="sd">        :type  path: str</span>
+<span class="sd">        :param use_wall_clock: whether to use the real time from the machine (True) or from the video file (False).</span>
+<span class="sd">            The former can be useful for prototyping.</span>
+<span class="sd">        :type use_wall_clock:bool</span>
+<span class="sd">        :param args: additional arguments</span>
+<span class="sd">        :param kwargs: additional keyword arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c">#print &quot;path&quot;, path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_frame_idx</span> <span class="o">=</span> <span class="mi">0</span>
@@ -229,6 +275,18 @@
 </div>
 <div class="viewcode-block" id="V4L2Camera"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.V4L2Camera">[docs]</a><span class="k">class</span> <span class="nc">V4L2Camera</span><span class="p">(</span><span class="n">BaseCamera</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">device</span><span class="p">,</span> <span class="n">target_fps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">target_resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">960</span><span class="p">,</span><span class="mi">720</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        class to acquire stream from a video for linux compatible device (v4l2).</span>
+
+<span class="sd">        :param device: The index of the device, or its path.</span>
+<span class="sd">        :type device: int or str</span>
+<span class="sd">        :param target_fps: the desired number of frames par second (FPS)</span>
+<span class="sd">        :type target_fps: int</span>
+<span class="sd">        :param target_fps: the desired resolution (W x H)</span>
+<span class="sd">        :param target_resolution: (int,int)</span>
+<span class="sd">        :param args: additional arguments</span>
+<span class="sd">        :param kwargs: additional keyword arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">capture</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_warm_up</span><span class="p">()</span>
 
@@ -332,6 +390,7 @@
 <div class="viewcode-block" id="OurPiCamera"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.OurPiCamera">[docs]</a><span class="k">class</span> <span class="nc">OurPiCamera</span><span class="p">(</span><span class="n">BaseCamera</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">target_resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">960</span><span class="p">,</span><span class="mi">720</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Initialising camera&quot;</span><span class="p">)</span>
         <span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">target_resolution</span>
@@ -445,6 +504,9 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span></div>
 <div class="viewcode-block" id="PiFrameGrabber"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.PiFrameGrabber">[docs]</a><span class="k">class</span> <span class="nc">PiFrameGrabber</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to grab frames from pi camera. Designed to be used within :class:`~ethoscope.hardware.camreras.camreras.OurPiCameraAsync `</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_fps</span><span class="p">,</span> <span class="n">target_resolution</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span><span class="n">stop_queue</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">queue</span>
@@ -484,6 +546,18 @@
 <div class="viewcode-block" id="OurPiCameraAsync"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.OurPiCameraAsync">[docs]</a><span class="k">class</span> <span class="nc">OurPiCameraAsync</span><span class="p">(</span><span class="n">BaseCamera</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_fps</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">target_resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">960</span><span class="p">),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to acquire frames from the raspberry pi camera asynchronously.</span>
+<span class="sd">        At the moment, frames are greyscale images.</span>
+
+<span class="sd">        :param target_fps: the desired number of frames par second (FPS)</span>
+<span class="sd">        :type target_fps: int</span>
+<span class="sd">        :param target_fps: the desired resolution (W x H)</span>
+<span class="sd">        :param target_resolution: (int,int)</span>
+<span class="sd">        :param args: additional arguments</span>
+<span class="sd">        :param kwargs: additional keyword arguments</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Initialising camera&quot;</span><span class="p">)</span>
         <span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">target_resolution</span>

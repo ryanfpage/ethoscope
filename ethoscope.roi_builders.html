@@ -153,85 +153,42 @@ The greyscale value inside the ROI determines it&#8217;s value.</p>
 <span id="ethoscope-roi-builders-target-roi-builder-module"></span><h2>ethoscope.roi_builders.target_roi_builder module<a class="headerlink" href="#module-ethoscope.roi_builders.target_roi_builder" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder">
-<em class="property">class </em><code class="descclassname">ethoscope.roi_builders.target_roi_builder.</code><code class="descname">OlfactionAssayROIBuilder</code><span class="sig-paren">(</span><em>n_rows=1</em>, <em>n_cols=1</em>, <em>top_margin=0</em>, <em>bottom_margin=0</em>, <em>left_margin=0</em>, <em>right_margin=0</em>, <em>horizontal_fill=0.9</em>, <em>vertical_fill=0.9</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/roi_builders/target_roi_builder.html#OlfactionAssayROIBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">ethoscope.roi_builders.target_roi_builder.</code><code class="descname">OlfactionAssayROIBuilder</code><a class="reference internal" href="_modules/ethoscope/roi_builders/target_roi_builder.html#OlfactionAssayROIBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder" title="ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder</span></code></a></p>
-<p>Class to build ROIs for a one-columns, ten-rows for the  <a class="reference external" href="todo">olfactory response arena</a></p>
-<p>This roi builder uses three black cirles drawn on the arena (targets) to align a grid layout:
-IMAGE HERE</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_rows</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of rows in the grid</li>
-<li><strong>n_cols</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of columns</li>
-<li><strong>top_margin</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The vertical distance between the middle of the top ROIs and the middle of the top target</li>
-<li><strong>bottom_margin</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; same as top_margin, but for the bottom.</li>
-<li><strong>left_margin</strong> &#8211; same as top_margin, but for the left side.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>:type left_margin:float
-:param right_margin: same as top_margin, but for the right side.
-:type right_margin: float
-:param horizontal_fill: The proportion of the grid space user by the roi, horizontally (between 0 and 1).
-:type horizontal_fill: float
-:param vertical_fill: same as vertical_fill, but horizontally
-:type vertical_fill: float</p>
-<dl class="attribute">
-<dt id="ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder.description">
-<code class="descname">description</code><em class="property"> = {'overview': 'The default odor assay  roi layout with ten rows of single tubes.', 'arguments': []}</em><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder.description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<p>Class to build ROIs for a one-columns, ten-rows for the</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="ethoscope.roi_builders.target_roi_builder.SleepMonitorWithTargetROIBuilder">
 <em class="property">class </em><code class="descclassname">ethoscope.roi_builders.target_roi_builder.</code><code class="descname">SleepMonitorWithTargetROIBuilder</code><a class="reference internal" href="_modules/ethoscope/roi_builders/target_roi_builder.html#SleepMonitorWithTargetROIBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.SleepMonitorWithTargetROIBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder" title="ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder</span></code></a></p>
-<p>Class to build ROIs for a two-columns, ten-rows for the  <a class="reference external" href="todo">sleep monitor tube holder arena</a></p>
-<dl class="attribute">
-<dt id="ethoscope.roi_builders.target_roi_builder.SleepMonitorWithTargetROIBuilder.description">
-<code class="descname">description</code><em class="property"> = {'overview': 'The default sleep monitor arena with ten rows of two tubes.', 'arguments': []}</em><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.SleepMonitorWithTargetROIBuilder.description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<p>Class to build ROIs for a two-columns, ten-rows for the</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder">
 <em class="property">class </em><code class="descclassname">ethoscope.roi_builders.target_roi_builder.</code><code class="descname">TargetGridROIBuilder</code><span class="sig-paren">(</span><em>n_rows=1</em>, <em>n_cols=1</em>, <em>top_margin=0</em>, <em>bottom_margin=0</em>, <em>left_margin=0</em>, <em>right_margin=0</em>, <em>horizontal_fill=0.9</em>, <em>vertical_fill=0.9</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/roi_builders/target_roi_builder.html#TargetGridROIBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ethoscope.roi_builders.roi_builders.BaseROIBuilder" title="ethoscope.roi_builders.roi_builders.BaseROIBuilder"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.roi_builders.roi_builders.BaseROIBuilder</span></code></a></p>
-<p>This roi builder uses three black cirles drawn on the arena (targets) to align a grid layout:
-IMAGE HERE</p>
+<p>This roi builder uses three black circles drawn on the arena (targets) to align a grid layout:</p>
+<p>IMAGE HERE</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>n_rows</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of rows in the grid</li>
-<li><strong>n_cols</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of columns</li>
+<li><strong>n_rows</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of rows in the grid.</li>
+<li><strong>n_cols</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of columns.</li>
 <li><strong>top_margin</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The vertical distance between the middle of the top ROIs and the middle of the top target</li>
 <li><strong>bottom_margin</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; same as top_margin, but for the bottom.</li>
-<li><strong>left_margin</strong> &#8211; same as top_margin, but for the left side.</li>
+<li><strong>left_margin</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; same as top_margin, but for the left side.</li>
+<li><strong>right_margin</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; same as top_margin, but for the right side.</li>
+<li><strong>horizontal_fill</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The proportion of the grid space user by the roi, horizontally (between 0 and 1).</li>
+<li><strong>vertical_fill</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; same as vertical_fill, but horizontally.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:type left_margin:float
-:param right_margin: same as top_margin, but for the right side.
-:type right_margin: float
-:param horizontal_fill: The proportion of the grid space user by the roi, horizontally (between 0 and 1).
-:type horizontal_fill: float
-:param vertical_fill: same as vertical_fill, but horizontally
-:type vertical_fill: float</p>
-<dl class="attribute">
-<dt id="ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder.description">
-<code class="descname">description</code><em class="property"> = {'overview': 'A flexible ROI builder that allows users to select parameters for the ROI layout.Lengths are relative to the distance between the two bottom targets (width)', 'arguments': [{'description': 'The number of columns', 'min': 1, 'default': 1, 'max': 16, 'step': 1, 'type': 'number', 'name': 'n_cols'}, {'description': 'The number of rows', 'min': 1, 'default': 1, 'max': 16, 'step': 1, 'type': 'number', 'name': 'n_rows'}, {'description': 'The vertical distance between the middle of the top ROIs and the middle of the top target.', 'min': 0.0, 'default': 0.0, 'max': 1.0, 'step': 0.001, 'type': 'number', 'name': 'top_margin'}, {'description': 'Same as top_margin, but for the bottom.', 'min': 0.0, 'default': 0.0, 'max': 1.0, 'step': 0.001, 'type': 'number', 'name': 'bottom_margin'}, {'description': 'Same as top_margin, but for the right.', 'min': 0.0, 'default': 0.0, 'max': 1.0, 'step': 0.001, 'type': 'number', 'name': 'right_margin'}, {'description': 'Same as top_margin, but for the left.', 'min': 0.0, 'default': 0.0, 'max': 1.0, 'step': 0.001, 'type': 'number', 'name': 'left_margin'}, {'description': 'The proportion of the grid space user by the roi, horizontally.', 'min': 0.0, 'default': 0.9, 'max': 1.0, 'step': 0.001, 'type': 'number', 'name': 'horizontal_fill'}, {'description': 'Same as horizontal_margin, but vertically.', 'min': 0.0, 'default': 0.9, 'max': 1.0, 'step': 0.001, 'type': 'number', 'name': 'left_margin'}]}</em><a class="headerlink" href="#ethoscope.roi_builders.target_roi_builder.TargetGridROIBuilder.description" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>

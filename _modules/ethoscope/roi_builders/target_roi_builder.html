@@ -89,7 +89,7 @@
     <span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">_vertical_fill</span> <span class="o">=</span> <span class="bp">None</span>
 
-    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;A flexible ROI builder that allows users to select parameters for the ROI layout.&quot;</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;A flexible ROI builder that allows users to select parameters for the ROI layout.&quot;</span>
                                <span class="s">&quot;Lengths are relative to the distance between the two bottom targets (width)&quot;</span><span class="p">,</span>
                     <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[</span>
                                     <span class="p">{</span><span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;number&quot;</span><span class="p">,</span> <span class="s">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;max&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&quot;step&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">:</span> <span class="s">&quot;n_cols&quot;</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;The number of columns&quot;</span><span class="p">,</span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">},</span>
@@ -104,26 +104,26 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">top_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bottom_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                  <span class="n">left_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right_margin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">horizontal_fill</span><span class="o">=.</span><span class="mi">9</span><span class="p">,</span> <span class="n">vertical_fill</span><span class="o">=.</span><span class="mi">9</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This roi builder uses three black cirles drawn on the arena (targets) to align a grid layout:</span>
+<span class="sd">        This roi builder uses three black circles drawn on the arena (targets) to align a grid layout:</span>
+
 <span class="sd">        IMAGE HERE</span>
 
-<span class="sd">        :param n_rows: The number of rows in the grid</span>
+<span class="sd">        :param n_rows: The number of rows in the grid.</span>
 <span class="sd">        :type n_rows: int</span>
-<span class="sd">        :param n_cols: The number of columns</span>
+<span class="sd">        :param n_cols: The number of columns.</span>
 <span class="sd">        :type n_cols: int</span>
 <span class="sd">        :param top_margin: The vertical distance between the middle of the top ROIs and the middle of the top target</span>
 <span class="sd">        :type top_margin: float</span>
 <span class="sd">        :param bottom_margin: same as top_margin, but for the bottom.</span>
 <span class="sd">        :type bottom_margin: float</span>
 <span class="sd">        :param left_margin: same as top_margin, but for the left side.</span>
-<span class="sd">        :type left_margin:float</span>
+<span class="sd">        :type left_margin: float</span>
 <span class="sd">        :param right_margin: same as top_margin, but for the right side.</span>
 <span class="sd">        :type right_margin: float</span>
 <span class="sd">        :param horizontal_fill: The proportion of the grid space user by the roi, horizontally (between 0 and 1).</span>
 <span class="sd">        :type horizontal_fill: float</span>
-<span class="sd">        :param vertical_fill: same as vertical_fill, but horizontally</span>
+<span class="sd">        :param vertical_fill: same as vertical_fill, but horizontally.</span>
 <span class="sd">        :type vertical_fill: float</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_rows</span> <span class="o">=</span> <span class="n">n_rows</span>
@@ -290,20 +290,16 @@
 </div>
 <div class="viewcode-block" id="SleepMonitorWithTargetROIBuilder"><a class="viewcode-back" href="../../../ethoscope.roi_builders.html#ethoscope.roi_builders.target_roi_builder.SleepMonitorWithTargetROIBuilder">[docs]</a><span class="k">class</span> <span class="nc">SleepMonitorWithTargetROIBuilder</span><span class="p">(</span><span class="n">TargetGridROIBuilder</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to build ROIs for a two-columns, ten-rows for the  `sleep monitor tube holder arena &lt;todo&gt;`_</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default sleep monitor arena with ten rows of two tubes.&quot;</span><span class="p">,</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default sleep monitor arena with ten rows of two tubes.&quot;</span><span class="p">,</span>
                     <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[]}</span>
 
-    <span class="n">_n_rows</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">_n_cols</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">_top_margin</span> <span class="o">=</span>  <span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span>
-    <span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">9</span>
-    <span class="n">_vertical_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">7</span>
-
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SleepMonitorWithTargetROIBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">n_rows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to build ROIs for a two-columns, ten-rows for the</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#`sleep monitor tube holder arena &lt;todo&gt;`_</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">SleepMonitorWithTargetROIBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">n_rows</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                                                                <span class="n">n_cols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                                                                <span class="n">top_margin</span><span class="o">=</span><span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span><span class="p">,</span>
                                                                <span class="n">bottom_margin</span> <span class="o">=</span><span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span><span class="p">,</span>
@@ -314,19 +310,22 @@
 
 </div>
 <div class="viewcode-block" id="OlfactionAssayROIBuilder"><a class="viewcode-back" href="../../../ethoscope.roi_builders.html#ethoscope.roi_builders.target_roi_builder.OlfactionAssayROIBuilder">[docs]</a><span class="k">class</span> <span class="nc">OlfactionAssayROIBuilder</span><span class="p">(</span><span class="n">TargetGridROIBuilder</span><span class="p">):</span>
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to build ROIs for a one-columns, ten-rows for the  `olfactory response arena &lt;todo&gt;`_</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default odor assay  roi layout with ten rows of single tubes.&quot;</span><span class="p">,</span>
+    <span class="n">_description</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;overview&quot;</span><span class="p">:</span> <span class="s">&quot;The default odor assay  roi layout with ten rows of single tubes.&quot;</span><span class="p">,</span>
                     <span class="s">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">[]}</span>
-    <span class="n">_n_rows</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">_n_cols</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">_top_margin</span> <span class="o">=</span>  <span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span>
-    <span class="n">_horizontal_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">9</span>
-    <span class="n">_vertical_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">7</span></div>
-</pre></div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to build ROIs for a one-columns, ten-rows for the</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#`olfactory response arena &lt;todo&gt;`_</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">OlfactionAssayROIBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">n_rows</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                                               <span class="n">n_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                                               <span class="n">top_margin</span><span class="o">=</span><span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span><span class="p">,</span>
+                                                               <span class="n">bottom_margin</span> <span class="o">=</span><span class="mf">6.99</span> <span class="o">/</span> <span class="mf">111.00</span><span class="p">,</span>
+                                                               <span class="n">horizontal_fill</span> <span class="o">=</span> <span class="o">.</span><span class="mi">9</span><span class="p">,</span>
+                                                               <span class="n">vertical_fill</span><span class="o">=</span> <span class="o">.</span><span class="mi">7</span>
+                                                               <span class="p">)</span>
+</pre></div></div>
 
           </div>
         </div>
