@@ -96,7 +96,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>drop_each</strong> &#8211; keep only <a href="#id1"><span class="problematic" id="id2">``</span></a>1/<cite>drop_each</cite>&#8216;th frame</li>
+<li><strong>drop_each</strong> &#8211; keep only <code class="docutils literal"><span class="pre">1/drop_each</span></code>&#8216;th frame</li>
 <li><strong>max_duration</strong> &#8211; stop the video stream if <code class="docutils literal"><span class="pre">t</span> <span class="pre">&gt;</span> <span class="pre">max_duration</span></code> (in seconds).</li>
 <li><strong>args</strong> &#8211; additional arguments</li>
 <li><strong>kwargs</strong> &#8211; additional keyword arguments</li>
@@ -188,16 +188,14 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>path</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; the path of the video file</li>
-<li><strong>use_wall_clock</strong> &#8211; whether to use the real time from the machine (True) or from the video file (False).
-The former can be useful for prototyping.</li>
+<li><strong>use_wall_clock</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; whether to use the real time from the machine (True) or from the video file (False).            The former can be useful for prototyping.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional keyword arguments.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<p>:type use_wall_clock:bool
-:param args: additional arguments
-:param kwargs: additional keyword arguments</p>
 <dl class="method">
 <dt id="ethoscope.hardware.input.cameras.MovieVirtualCamera.is_last_frame">
 <code class="descname">is_last_frame</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/input/cameras.html#MovieVirtualCamera.is_last_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.input.cameras.MovieVirtualCamera.is_last_frame" title="Permalink to this definition">¶</a></dt>
@@ -298,7 +296,7 @@ At the moment, frames are greyscale images.</p>
 <dt id="ethoscope.hardware.input.cameras.PiFrameGrabber">
 <em class="property">class </em><code class="descclassname">ethoscope.hardware.input.cameras.</code><code class="descname">PiFrameGrabber</code><span class="sig-paren">(</span><em>target_fps</em>, <em>target_resolution</em>, <em>queue</em>, <em>stop_queue</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/input/cameras.html#PiFrameGrabber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.input.cameras.PiFrameGrabber" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">multiprocessing.process.Process</span></code></p>
-<p>Class to grab frames from pi camera. Designed to be used within :class:<a href="#id3"><span class="problematic" id="id4">`</span></a>~ethoscope.hardware.camreras.camreras.OurPiCameraAsync `</p>
+<p>Class to grab frames from pi camera. Designed to be used within <code class="xref py py-class docutils literal"><span class="pre">OurPiCameraAsync</span></code></p>
 <dl class="method">
 <dt id="ethoscope.hardware.input.cameras.PiFrameGrabber.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/hardware/input/cameras.html#PiFrameGrabber.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.hardware.input.cameras.PiFrameGrabber.run" title="Permalink to this definition">¶</a></dt>

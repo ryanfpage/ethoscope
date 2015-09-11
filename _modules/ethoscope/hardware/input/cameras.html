@@ -91,7 +91,7 @@
 <span class="sd">        The template class to generate and use video streams.</span>
 
 
-<span class="sd">        :param drop_each: keep only ``1/`drop_each`&#39;th frame</span>
+<span class="sd">        :param drop_each: keep only ``1/drop_each``&#39;th frame</span>
 <span class="sd">        :param max_duration: stop the video stream if ``t &gt; max_duration`` (in seconds).</span>
 <span class="sd">        :param args: additional arguments</span>
 <span class="sd">        :param kwargs: additional keyword arguments</span>
@@ -199,12 +199,12 @@
 <span class="sd">        Class to acquire frames from a video file.</span>
 
 <span class="sd">        :param path: the path of the video file</span>
-<span class="sd">        :type  path: str</span>
-<span class="sd">        :param use_wall_clock: whether to use the real time from the machine (True) or from the video file (False).</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :param use_wall_clock: whether to use the real time from the machine (True) or from the video file (False).\</span>
 <span class="sd">            The former can be useful for prototyping.</span>
-<span class="sd">        :type use_wall_clock:bool</span>
-<span class="sd">        :param args: additional arguments</span>
-<span class="sd">        :param kwargs: additional keyword arguments</span>
+<span class="sd">        :type use_wall_clock: bool</span>
+<span class="sd">        :param args: additional arguments.</span>
+<span class="sd">        :param kwargs: additional keyword arguments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c">#print &quot;path&quot;, path</span>
@@ -505,7 +505,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span></div>
 <div class="viewcode-block" id="PiFrameGrabber"><a class="viewcode-back" href="../../../../ethoscope.hardware.input.html#ethoscope.hardware.input.cameras.PiFrameGrabber">[docs]</a><span class="k">class</span> <span class="nc">PiFrameGrabber</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to grab frames from pi camera. Designed to be used within :class:`~ethoscope.hardware.camreras.camreras.OurPiCameraAsync `</span>
+<span class="sd">    Class to grab frames from pi camera. Designed to be used within :class:`~ethoscope.hardware.camreras.camreras.OurPiCameraAsync`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_fps</span><span class="p">,</span> <span class="n">target_resolution</span><span class="p">,</span> <span class="n">queue</span><span class="p">,</span><span class="n">stop_queue</span><span class="p">):</span>

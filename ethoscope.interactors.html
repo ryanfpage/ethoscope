@@ -52,11 +52,10 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">ethoscope.interactors package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-ethoscope.interactors.fake_sleep_dep_interactor">ethoscope.interactors.fake_sleep_dep_interactor module</a></li>
+<li><a class="reference internal" href="#module-ethoscope.interactors">Module contents</a></li>
 <li><a class="reference internal" href="#module-ethoscope.interactors.interactors">ethoscope.interactors.interactors module</a></li>
 <li><a class="reference internal" href="#module-ethoscope.interactors.sleep_depriver_interactor">ethoscope.interactors.sleep_depriver_interactor module</a></li>
-<li><a class="reference internal" href="#module-ethoscope.interactors">Module contents</a></li>
+<li><a class="reference internal" href="#module-ethoscope.interactors.fake_sleep_dep_interactor">ethoscope.interactors.fake_sleep_dep_interactor module</a></li>
 </ul>
 </li>
 </ul>
@@ -97,39 +96,8 @@
             
   <div class="section" id="ethoscope-interactors-package">
 <h1>ethoscope.interactors package<a class="headerlink" href="#ethoscope-interactors-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-ethoscope.interactors.fake_sleep_dep_interactor">
-<span id="ethoscope-interactors-fake-sleep-dep-interactor-module"></span><h2>ethoscope.interactors.fake_sleep_dep_interactor module<a class="headerlink" href="#module-ethoscope.interactors.fake_sleep_dep_interactor" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor">
-<em class="property">class </em><code class="descclassname">ethoscope.interactors.fake_sleep_dep_interactor.</code><code class="descname">FakeSleepDepInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em>, <em>velocity_threshold=0.006</em>, <em>min_inactive_time=120</em>, <em>start_datetime=0</em>, <em>end_datetime=9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/fake_sleep_dep_interactor.html#FakeSleepDepInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor" title="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor</span></code></a></p>
-<p>A fake sleep depriver interface. It mimics the behaviour of
-<a class="reference internal" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor" title="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor"><code class="xref py py-class docutils literal"><span class="pre">SleepDepInteractor</span></code></a>,
-but simply prints a message instead of moving a servo.</p>
-<p>A interactor to control a sleep depriver module</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hardware_interface</strong> (<code class="xref py py-class docutils literal"><span class="pre">SleepDepriverInterface</span></code>) &#8211; the sleep depriver module hardware interface</li>
-<li><strong>velocity_threshold</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; </li>
-<li><strong>min_inactive_time</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; the minimal time without motion after which an animal should be disturbed (in seconds)</li>
-<li><strong>start_datetime</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The unix time stamp of the start of the experiment</li>
-<li><strong>end_datetime</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The unix time stamp of the end of the experiment</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<div class="section" id="module-ethoscope.interactors">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ethoscope.interactors" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-ethoscope.interactors.interactors">
 <span id="ethoscope-interactors-interactors-module"></span><h2>ethoscope.interactors.interactors module<a class="headerlink" href="#module-ethoscope.interactors.interactors" title="Permalink to this headline">¶</a></h2>
@@ -249,8 +217,36 @@ share with one another.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-ethoscope.interactors">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ethoscope.interactors" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ethoscope.interactors.fake_sleep_dep_interactor">
+<span id="ethoscope-interactors-fake-sleep-dep-interactor-module"></span><h2>ethoscope.interactors.fake_sleep_dep_interactor module<a class="headerlink" href="#module-ethoscope.interactors.fake_sleep_dep_interactor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor">
+<em class="property">class </em><code class="descclassname">ethoscope.interactors.fake_sleep_dep_interactor.</code><code class="descname">FakeSleepDepInteractor</code><span class="sig-paren">(</span><em>hardware_interface</em>, <em>velocity_threshold=0.006</em>, <em>min_inactive_time=120</em>, <em>start_datetime=0</em>, <em>end_datetime=9223372036854775807</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ethoscope/interactors/fake_sleep_dep_interactor.html#FakeSleepDepInteractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ethoscope.interactors.fake_sleep_dep_interactor.FakeSleepDepInteractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor" title="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor"><code class="xref py py-class docutils literal"><span class="pre">ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor</span></code></a></p>
+<p>A fake sleep depriver interface. It mimics the behaviour of
+<a class="reference internal" href="#ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor" title="ethoscope.interactors.sleep_depriver_interactor.SleepDepInteractor"><code class="xref py py-class docutils literal"><span class="pre">SleepDepInteractor</span></code></a>,
+but simply prints a message instead of moving a servo.</p>
+<p>A interactor to control a sleep depriver module</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hardware_interface</strong> (<code class="xref py py-class docutils literal"><span class="pre">SleepDepriverInterface</span></code>) &#8211; the sleep depriver module hardware interface</li>
+<li><strong>velocity_threshold</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; </li>
+<li><strong>min_inactive_time</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; the minimal time without motion after which an animal should be disturbed (in seconds)</li>
+<li><strong>start_datetime</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The unix time stamp of the start of the experiment</li>
+<li><strong>end_datetime</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The unix time stamp of the end of the experiment</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 
