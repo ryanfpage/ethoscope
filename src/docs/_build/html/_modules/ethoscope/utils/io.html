@@ -1,0 +1,623 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ethoscope.utils.io &mdash; ethoscope 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="ethoscope 1.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ethoscope 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ethoscope.utils.io</h1><div class="highlight"><pre>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s">&#39;quentin&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">MySQLdb</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="AsyncMySQLWriter"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.AsyncMySQLWriter">[docs]</a><span class="k">class</span> <span class="nc">AsyncMySQLWriter</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_credentials</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span> <span class="o">=</span> <span class="n">db_credentials</span><span class="p">[</span><span class="s">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_user_name</span> <span class="o">=</span> <span class="n">db_credentials</span><span class="p">[</span><span class="s">&quot;user&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_user_pass</span> <span class="o">=</span> <span class="n">db_credentials</span><span class="p">[</span><span class="s">&quot;password&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">queue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delete_my_sql_db</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_mysql_db</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AsyncMySQLWriter</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_delete_my_sql_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">db</span> <span class="o">=</span>   <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;localhost&quot;</span><span class="p">,</span>
+                 <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_user_name</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_user_pass</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Database does not exist. Cannot delete it&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;connecting to mysql db&quot;</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="c">#Truncate all tables before dropping db for performance</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;SHOW TABLES&quot;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        <span class="n">to_execute</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;TRUNCATE TABLE </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">t</span>
+            <span class="n">to_execute</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Truncating all database tables&quot;</span><span class="p">)</span>
+
+
+        <span class="k">for</span> <span class="n">te</span> <span class="ow">in</span> <span class="n">to_execute</span><span class="p">:</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Dropping entire database&quot;</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;DROP DATABASE IF EXISTS </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">_create_mysql_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">db</span> <span class="o">=</span>   <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;localhost&quot;</span><span class="p">,</span>
+                 <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_user_name</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_user_pass</span><span class="p">)</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;CREATE DATABASE </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Database created&quot;</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;SET GLOBAL innodb_file_per_table=1&quot;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;SET GLOBAL innodb_file_format=Barracuda&quot;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;SET GLOBAL autocommit=0&quot;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">db</span> <span class="o">=</span>   <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;localhost&quot;</span><span class="p">,</span>
+                 <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_user_name</span><span class="p">,</span> <span class="n">passwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_user_pass</span><span class="p">,</span>
+                  <span class="n">db</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span>
+
+<div class="viewcode-block" id="AsyncMySQLWriter.run"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.AsyncMySQLWriter.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">do_run</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delete_my_sql_db</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_mysql_db</span><span class="p">()</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">do_run</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">msg</span> <span class="o">==</span> <span class="s">&#39;DONE&#39;</span><span class="p">):</span>
+                        <span class="n">do_run</span><span class="o">=</span><span class="bp">False</span>
+                        <span class="k">continue</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">do_run</span><span class="o">=</span><span class="bp">False</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to run mysql command:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Did not retrieve queue value&quot;</span><span class="p">)</span>
+
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                        <span class="c">#we sleep iff we have an empty queue. this way, we don&#39;t over use a cpu</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;DB async process interrupted with KeyboardInterrupt&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;DB async process stopped with an exception&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Closing async mysql writer&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="ImgToMySQLHelper"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.ImgToMySQLHelper">[docs]</a><span class="k">class</span> <span class="nc">ImgToMySQLHelper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">_table_name</span> <span class="o">=</span> <span class="s">&quot;IMG_SNAPSHOTS&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">period</span> <span class="o">=</span> <span class="mf">60.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="n">period</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_tick</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mktemp</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s">&quot;psv_&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s">&quot;.jpg&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Could not remove temp file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ImgToMySQLHelper.flush"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.ImgToMySQLHelper.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="n">tick</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">t</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tick</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_tick</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+        <span class="n">bstring</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO </span><span class="si">%s</span><span class="s"> VALUES </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_table_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">bstring</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_tick</span> <span class="o">=</span> <span class="n">tick</span>
+
+        <span class="k">return</span> <span class="n">cmd</span>
+</div></div>
+<div class="viewcode-block" id="DAMFileHelper"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.DAMFileHelper">[docs]</a><span class="k">class</span> <span class="nc">DAMFileHelper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span><span class="n">n_rois</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_period</span> <span class="o">=</span> <span class="n">period</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">=</span> <span class="n">n_rois</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_distance_map</span> <span class="o">=</span><span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_positions</span> <span class="o">=</span><span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">=</span> <span class="mi">100</span> <span class="c"># multiply by this factor before converting wor to float activity</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_distance_map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="DAMFileHelper.make_dam_file_sql_fields"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.DAMFileHelper.make_dam_file_sql_fields">[docs]</a>    <span class="k">def</span> <span class="nf">make_dam_file_sql_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;id INT  NOT NULL AUTO_INCREMENT PRIMARY KEY&quot;</span><span class="p">,</span>
+          <span class="s">&quot;date CHAR(100)&quot;</span><span class="p">,</span>
+          <span class="s">&quot;time CHAR(100)&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;DUMMY_FIELD_</span><span class="si">%d</span><span class="s"> SMALLINT&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;ROI_</span><span class="si">%d</span><span class="s"> SMALLINT&quot;</span> <span class="o">%</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating &#39;CSV_DAM_ACTIVITY&#39; table&quot;</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fields</span>
+</div>
+    <span class="k">def</span> <span class="nf">_compute_distance_for_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">last_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_positions</span><span class="p">[</span><span class="n">roi</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span>
+        <span class="n">current_pos</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1j</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">last_pos</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_positions</span><span class="p">[</span><span class="n">roi</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_pos</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">current_pos</span> <span class="o">-</span> <span class="n">last_pos</span><span class="p">)</span>
+        <span class="n">dist</span> <span class="o">/=</span> <span class="n">roi</span><span class="o">.</span><span class="n">longest_axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_positions</span><span class="p">[</span><span class="n">roi</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_pos</span>
+
+        <span class="k">return</span> <span class="n">dist</span>
+
+<div class="viewcode-block" id="DAMFileHelper.input_roi_data"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.DAMFileHelper.input_roi_data">[docs]</a>    <span class="k">def</span> <span class="nf">input_roi_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">tick</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">t</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">))</span>
+        <span class="n">act</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_distance_for_roi</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tick</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">tick</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">tick</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">tick</span><span class="p">][</span><span class="n">roi</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="n">act</span>
+</div>
+    <span class="k">def</span> <span class="nf">_make_sql_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+        <span class="n">date_time_fields</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s"> %b %Y,%H:%M:%S&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">date_time_fields</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">*</span> <span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;INSERT INTO CSV_DAM_ACTIVITY VALUES </span><span class="si">%s</span><span class="s">&#39;&#39;&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">command</span>
+
+
+<div class="viewcode-block" id="DAMFileHelper.flush"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.DAMFileHelper.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+
+        <span class="n">out</span> <span class="o">=</span>  <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">tick</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">t</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_period</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">tick</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">tick</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+
+        <span class="n">m</span>  <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">todel</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">tick</span> <span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">todel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rois</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">r</span><span class="p">],</span><span class="mi">5</span><span class="p">)</span>
+
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">todel</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activity_accum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+
+        <span class="k">if</span> <span class="n">tick</span> <span class="o">-</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;DAM file writer skipping a tick. No data for more than one period!&quot;</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_sql_command</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">out</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+        <span class="k">return</span> <span class="n">out</span>
+</div></div>
+<div class="viewcode-block" id="ResultWriter"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.ResultWriter">[docs]</a><span class="k">class</span> <span class="nc">ResultWriter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c"># _flush_every_ns = 30 # flush every 10s of data</span>
+    <span class="n">_max_insert_string_len</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">_async_writing_class</span> <span class="o">=</span> <span class="n">AsyncMySQLWriter</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_credentials</span><span class="p">,</span> <span class="n">rois</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">make_dam_like_table</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">take_frame_shots</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">JoinableQueue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_writing_class</span><span class="p">(</span><span class="n">db_credentials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_writer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_flush_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_dam_t</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rois</span> <span class="o">=</span> <span class="n">rois</span>
+        <span class="k">if</span> <span class="n">make_dam_like_table</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span> <span class="o">=</span> <span class="n">DAMFileHelper</span><span class="p">(</span><span class="n">n_rois</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">rois</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">take_frame_shots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shot_saver</span> <span class="o">=</span> <span class="n">ImgToMySQLHelper</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shot_saver</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>  <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_map_initialised</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating master table &#39;ROI_MAP&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="s">&quot;ROI_MAP&quot;</span><span class="p">,</span> <span class="s">&quot;roi_idx SMALLINT, roi_value SMALLINT, x SMALLINT,y SMALLINT,w SMALLINT,h SMALLINT&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rois</span><span class="p">:</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get_feature_dict</span><span class="p">()</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO ROI_MAP VALUES </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">((</span><span class="n">fd</span><span class="p">[</span><span class="s">&quot;idx&quot;</span><span class="p">],</span> <span class="n">fd</span><span class="p">[</span><span class="s">&quot;value&quot;</span><span class="p">],</span> <span class="n">fd</span><span class="p">[</span><span class="s">&quot;x&quot;</span><span class="p">],</span> <span class="n">fd</span><span class="p">[</span><span class="s">&quot;y&quot;</span><span class="p">],</span> <span class="n">fd</span><span class="p">[</span><span class="s">&quot;w&quot;</span><span class="p">],</span> <span class="n">fd</span><span class="p">[</span><span class="s">&quot;h&quot;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating variable map table &#39;VAR_MAP&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="s">&quot;VAR_MAP&quot;</span><span class="p">,</span> <span class="s">&quot;var_name CHAR(100), sql_type CHAR(100), functional_type CHAR(100)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot_saver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="s">&quot;IMG_SNAPSHOTS&quot;</span><span class="p">,</span> <span class="s">&quot;id INT  NOT NULL AUTO_INCREMENT PRIMARY KEY , t INT, img LONGBLOB&quot;</span><span class="p">)</span>
+
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating &#39;CSV_DAM_ACTIVITY&#39; table&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span><span class="o">.</span><span class="n">make_dam_file_sql_fields</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="s">&quot;CSV_DAM_ACTIVITY&quot;</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating &#39;METADATA&#39; table&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="s">&quot;METADATA&quot;</span><span class="p">,</span> <span class="s">&quot;field CHAR(100), value CHAR(200)&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO METADATA VALUES </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;waiting for queue to be processed&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Result writer initialised&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ResultWriter.write"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.ResultWriter.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data_row</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_map_initialised</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rois</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initialise</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">data_row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialise_var_map</span><span class="p">(</span><span class="n">data_row</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_t</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span><span class="o">.</span><span class="n">input_roi_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data_row</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ResultWriter.flush"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.ResultWriter.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">img</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dam_file_helper</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot_saver</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">img</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shot_saver</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">img</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_insert_string_len</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data_row</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="n">roi_id</span> <span class="o">=</span> <span class="n">roi</span><span class="o">.</span><span class="n">idx</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">data_row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">roi_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span>  <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">roi_id</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&#39;INSERT INTO ROI_</span><span class="si">%i</span><span class="s"> VALUES </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">roi_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">tp</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">roi_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">roi_id</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tp</span><span class="p">))</span>
+
+
+
+    <span class="k">def</span> <span class="nf">_initialise_var_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">data_row</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Filling &#39;VAR_MAP&#39; with values&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">data_row</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;INSERT INTO VAR_MAP VALUES </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span> <span class="nb">str</span><span class="p">((</span><span class="n">dt</span><span class="o">.</span><span class="n">header_name</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">sql_data_type</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">functional_type</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_map_initialised</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+
+    <span class="k">def</span> <span class="nf">_initialise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data_row</span><span class="p">):</span>
+        <span class="c"># We make a new dir to store results</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;id INT  NOT NULL AUTO_INCREMENT PRIMARY KEY&quot;</span> <span class="p">,</span><span class="s">&quot;t INT&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">data_row</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">header_name</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">sql_data_type</span><span class="p">))</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="s">&quot;ROI_</span><span class="si">%i</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">roi</span><span class="o">.</span><span class="n">idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_table</span><span class="p">(</span><span class="n">table_name</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Closing result writer...&quot;</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Closing mysql async queue&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s">&quot;DONE&quot;</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Freeing queue&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">cancel_join_thread</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Joining thread&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_async_writer</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Joined OK&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ResultWriter.close"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.ResultWriter.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+    <span class="k">def</span> <span class="nf">_write_async_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_writer</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Async database writer has stopped unexpectedly&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s">&quot;MyISAM&quot;</span><span class="p">):</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;CREATE TABLE </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">) ENGINE </span><span class="si">%s</span><span class="s"> KEY_BLOCK_SIZE=16&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">engine</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating database table with: &quot;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="AsyncSQLiteWriter"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.AsyncSQLiteWriter">[docs]</a><span class="k">class</span> <span class="nc">AsyncSQLiteWriter</span><span class="p">(</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
+    <span class="n">_pragmas</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;temp_store&quot;</span><span class="p">:</span> <span class="s">&quot;MEMORY&quot;</span><span class="p">,</span>
+                <span class="s">&quot;journal_mode&quot;</span><span class="p">:</span> <span class="s">&quot;OFF&quot;</span><span class="p">,</span>
+                <span class="s">&quot;locking_mode&quot;</span><span class="p">:</span>  <span class="s">&quot;EXCLUSIVE&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span> <span class="o">=</span> <span class="n">db_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">queue</span>
+
+
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AsyncSQLiteWriter</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Setting DB parameters&#39;&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pragmas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;PRAGMA </span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        
+    <span class="k">def</span> <span class="nf">_get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">db</span> <span class="o">=</span>   <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span>
+
+
+<div class="viewcode-block" id="AsyncSQLiteWriter.run"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.AsyncSQLiteWriter.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">do_run</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">do_run</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">msg</span> <span class="o">==</span> <span class="s">&#39;DONE&#39;</span><span class="p">):</span>
+                        <span class="n">do_run</span><span class="o">=</span><span class="bp">False</span>
+                        <span class="k">continue</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">do_run</span><span class="o">=</span><span class="bp">False</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to run mysql command:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Did not retrieve queue value&quot;</span><span class="p">)</span>
+
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                        <span class="c">#we sleep iff we have an empty queue. this way, we don&#39;t over use a cpu</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;DB async process interrupted with KeyboardInterrupt&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;DB async process stopped with an exception&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Closing async mysql writer&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">db</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="Null"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.Null">[docs]</a><span class="k">class</span> <span class="nc">Null</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;NULL&quot;</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;NULL&quot;</span>
+</div>
+<div class="viewcode-block" id="SQLiteResultWriter"><a class="viewcode-back" href="../../../ethoscope.utils.html#ethoscope.utils.io.SQLiteResultWriter">[docs]</a><span class="k">class</span> <span class="nc">SQLiteResultWriter</span><span class="p">(</span><span class="n">ResultWriter</span><span class="p">):</span>
+    <span class="n">_async_writing_class</span> <span class="o">=</span> <span class="n">AsyncSQLiteWriter</span>
+    <span class="n">_null</span><span class="o">=</span> <span class="n">Null</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">rois</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">make_dam_like_table</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">take_frame_shots</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SQLiteResultWriter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">rois</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span><span class="n">make_dam_like_table</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">take_frame_shots</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_create_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;NOT NULL&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;CREATE TABLE </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;Creating database table with: &quot;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_async_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+
+
+    <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">roi</span><span class="p">,</span> <span class="n">data_row</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="n">roi_id</span> <span class="o">=</span> <span class="n">roi</span><span class="o">.</span><span class="n">idx</span>
+
+        <span class="n">tp</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_null</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">data_row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">roi_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span>  <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">roi_id</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&#39;INSERT INTO ROI_</span><span class="si">%i</span><span class="s"> VALUES </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">roi_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">tp</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">roi_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_insert_dict</span><span class="p">[</span><span class="n">roi_id</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="s">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">tp</span><span class="p">))</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ethoscope 1.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2015, Quentin Geissmann.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
