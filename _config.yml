@@ -1,0 +1,6 @@
+name: Ethoscope
+markdown: redcarpet
+pygments: true
+safe: true
+lsi: false
+baseurl: /ethoscope
