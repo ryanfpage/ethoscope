@@ -2,7 +2,14 @@
 layout: default
 title: Ethoscope Blog
 ---
-<div class="jumbotron">
+
     <h2>Blog</h2>
-    fsezrk;fgk;drsk gld;k gl;
-</div>
+
+    <ul>
+      {% for post in site.posts %}
+        <li>
+          <a href="{{ site.baseurl }}/{{ post.url }}">{{ post.title }}</a>
+          {{ post.excerpt }}
+        </li>
+      {% endfor %}
+    </ul>
