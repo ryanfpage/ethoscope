@@ -1,5 +1,4 @@
 name: Ethoscope
-markdown: redcarpet
 highlighter: pygments
 safe: true
 lsi: false
