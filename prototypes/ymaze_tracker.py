@@ -3,11 +3,15 @@ __author__ = 'diana'
 
 from ethoscope.hardware.input.cameras import MovieVirtualCamera
 from ethoscope.trackers.trackers import *
+from ethoscope.trackers.adaptive_bg_tracker import AdaptiveBGModel
 from ethoscope.roi_builders.target_roi_builder import TargetGridROIBuilder
 from ethoscope.core.monitor import Monitor
 from ethoscope.core.data_point import DataPoint
 from ethoscope.utils.io import SQLiteResultWriter
 from ethoscope.drawers.drawers import DefaultDrawer
+from ethoscope.core.roi import ROI
+
+from math import log10, sqrt, pi
 import cv2
 import numpy as np
 import optparse
@@ -103,14 +107,21 @@ class YMazeTracker(BaseTracker):
     def _track(self, img,  grey, mask, t):
         if self._accum is None:
             self._accum = grey.astype(np.float64)
+            self._old_pos = 0.0 +0.0j
 
         frame_float64 = grey.astype(np.float64)
         cv2.accumulateWeighted(frame_float64, self._accum, self._alpha)
         bg = self._accum.astype(np.uint8)
 
-        diff = cv2.subtract(bg, grey)
+        diff = cv2.absdiff(bg, grey)
+        #
+        # cv2.imshow('this', img)
+        # cv2.waitKey(30)
         cv2.medianBlur(grey, 7, grey)
         _, bin_im = cv2.threshold(diff, 100, 255, cv2.THRESH_BINARY)
+
+        # cv2.imshow('bin', bin_im)
+        # cv2.waitKey(30)
 
         contours,hierarchy = cv2.findContours(bin_im,
                                               cv2.RETR_EXTERNAL,
@@ -133,16 +144,28 @@ class YMazeTracker(BaseTracker):
         angle = angle % 180
 
         h_im = min(grey.shape)
+        w_im = max(grey.shape)
+
+
         max_h = 2*h_im
         if w>max_h or h>max_h:
             raise NoPositionError
+
+
+        pos = x +1.0j*y
+        pos /= w_im
+
+        xy_dist = round(log10(1./float(w_im) + abs(pos - self._old_pos))*1000)
+
+        self._old_pos = pos
+
         x_var = XPosVariable(int(round(x)))
         y_var = YPosVariable(int(round(y)))
         w_var = WidthVariable(int(round(w)))
         h_var = HeightVariable(int(round(h)))
         phi_var = PhiVariable(int(round(angle)))
-
-        out = DataPoint([x_var, y_var, w_var, h_var, phi_var])
+        distance = XYDistance(int(xy_dist))
+        out = DataPoint([x_var, y_var, w_var, h_var, phi_var, distance])
 
         return [out]
 
@@ -158,12 +181,12 @@ class YmazeROIBuilder(TargetGridROIBuilder):
     def __init__(self):
         super(YmazeROIBuilder, self).__init__(n_rows=1,
                                                                n_cols=1,
-                                                               top_margin=0.3,
-                                                               bottom_margin =0.3,
-                                                               left_margin = 0.3,
-                                                               right_margin = 0.3,
-                                                               horizontal_fill = 1,
-                                                               vertical_fill= 1
+                                                               top_margin=0,
+                                                               bottom_margin=0,
+                                                               left_margin = 0.5,
+                                                               right_margin = 0.5,
+                                                               horizontal_fill =  1.15,
+                                                               vertical_fill= 1.15
                                             )
 
 
@@ -175,7 +198,7 @@ class YmazeROIBuilder(TargetGridROIBuilder):
 
         # Filter by Area.
         params.filterByArea = True
-        params.minArea = 1200
+        params.minArea = 700
 
         # Filter by Circularity
         params.filterByCircularity = True
@@ -183,26 +206,34 @@ class YmazeROIBuilder(TargetGridROIBuilder):
         #
         # Filter by Convexity
         params.filterByConvexity = True
-        params.minConvexity = 0.5
+        params.minConvexity = 0.3
         #
         # # Filter by Inertia
         # params.filterByInertia = True
         # params.minInertiaRatio = 0.01
 
         detector = cv2.SimpleBlobDetector(params)
-        # Detect blobs.
+
+        #cv2.imshow('here', img)
+        #cv2.waitKey(0)
+
         keypoints = detector.detect(img)
+
+        if np.size(keypoints) !=3:
+            logging.error('Just %s targets found instead of three', np.size(keypoints))
+
+
         return keypoints
 
     def _sort(self, keypoints):
         #-----------A
         #-----------
         #C----------B
-
         # initialize the three targets that we want to found
         sorted_a = cv2.KeyPoint()
         sorted_b = cv2.KeyPoint()
         sorted_c = cv2.KeyPoint()
+
 
         # find the minimum x and the minimum y coordinate between the three targets
         minx = min(keypoint.pt[0] for keypoint in keypoints)
@@ -219,12 +250,12 @@ class YmazeROIBuilder(TargetGridROIBuilder):
         # b is the remaining point
         sorted_b = np.setdiff1d(keypoints, [sorted_a, sorted_c])[0]
 
-
         return np.array([sorted_a.pt, sorted_b.pt, sorted_c.pt], dtype=np.float32)
 
     def _rois_from_img(self,img):
         self._targets = self._find_target_coordinates(img)
         sorted_src_pts = self._sort(self._targets)
+
         dst_points = np.array([(0,-1),
                                (0,0),
                                (-1,0)], dtype=np.float32)
@@ -234,6 +265,7 @@ class YmazeROIBuilder(TargetGridROIBuilder):
                                      self._top_margin, self._bottom_margin,
                                      self._left_margin,self._right_margin,
                                      self._horizontal_fill, self._vertical_fill)
+
 
         shift = np.dot(wrap_mat, [1,1,0]) - sorted_src_pts[1] # point 1 is the ref, at 0,0
         rois = []
@@ -245,8 +277,8 @@ class YmazeROIBuilder(TargetGridROIBuilder):
             cv2.drawContours(img,[ct], -1, (255,0,0),1,cv2.CV_AA)
             rois.append(ROI(ct, idx=i+1))
 
-            # cv2.imshow("dbg",img)
-            # cv2.waitKey(0)
+            #cv2.imshow("dbg",img)
+            #cv2.waitKey(0)
         return rois, sorted_src_pts
 
     def build(self, input):
@@ -270,7 +302,9 @@ class YmazeROIBuilder(TargetGridROIBuilder):
                     break
 
             accum = np.median(np.array(accum),0).astype(np.uint8)
+
         try:
+            # Detect blobs.
             rois, sorted_targets = self._rois_from_img(accum)
 
         except Exception as e:
@@ -338,6 +372,8 @@ if __name__ == "__main__":
                              "date_time": cam.start_time, #the camera start time is the reference 0
                              "frame_width":cam.width,
                              "frame_height":cam.height,
+                             "start_target_x":sorted_targets[2][0],
+                             "start_target_y":sorted_targets[2][1],
                              "version": "whatever"
                               }
     draw_frames = False
@@ -350,6 +386,6 @@ if __name__ == "__main__":
 
 
     with SQLiteResultWriter(option_dict["out"], rois) as rw:
-        monit.run(None, drawer)
+        monit.run(rw, drawer)
 
     logging.info("Stopping Monitor")
