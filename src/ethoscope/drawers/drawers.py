@@ -5,7 +5,7 @@ from ethoscope.utils.description import DescribedObject
 import os
 
 class BaseDrawer(object):
-    _out_fps = 2
+    _out_fps = 25
 
     def __init__(self, video_out=None, draw_frames=True):
         """

@@ -103,10 +103,10 @@ class Monitor(object):
                 if self._force_stop:
                     logging.info("Monitor object stopped from external request")
                     break
-
                 self._last_frame_idx = i
                 self._last_time_stamp = t
                 self._frame_buffer = frame
+
 
                 for j,track_u in enumerate(self._unit_trackers):
                     data_rows = track_u.track(t, frame)

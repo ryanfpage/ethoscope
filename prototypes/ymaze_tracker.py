@@ -18,6 +18,7 @@ import optparse
 import logging
 from ethoscope.utils.debug import EthoscopeException
 from ethoscope.core.roi import ROI
+import math
 
 class YmazeDrawer(DefaultDrawer):
     def __init__(self, video_out= None, draw_frames=False, targets=None):
@@ -79,7 +80,7 @@ class YmazeDrawer(DefaultDrawer):
 
                 cv2.ellipse(img,((pos["x"],pos["y"]), (pos["w"],pos["h"]), pos["phi"]),black_colour,3,cv2.CV_AA)
                 cv2.ellipse(img,((pos["x"],pos["y"]), (pos["w"],pos["h"]), pos["phi"]),colour,1,cv2.CV_AA)
-
+                cv2.line(img, (pos["x"],pos["y"]),(pos["x"] + int(pos["w"]/2 * math.cos(math.radians(pos["phi"]))),pos["y"] + int(pos["w"]/2 * math.sin(math.radians(pos["phi"])))), colour, 1, cv2.CV_AA);
 
 
 class YMazeTracker(BaseTracker):
@@ -113,15 +114,18 @@ class YMazeTracker(BaseTracker):
         cv2.accumulateWeighted(frame_float64, self._accum, self._alpha)
         bg = self._accum.astype(np.uint8)
 
+        #cv2.imshow('bg', bg)
+        #cv2.waitKey(30)
+
         diff = cv2.absdiff(bg, grey)
         #
-        # cv2.imshow('this', img)
-        # cv2.waitKey(30)
+        #cv2.imshow('this', img)
+        #cv2.waitKey(30)
         cv2.medianBlur(grey, 7, grey)
         _, bin_im = cv2.threshold(diff, 100, 255, cv2.THRESH_BINARY)
 
-        # cv2.imshow('bin', bin_im)
-        # cv2.waitKey(30)
+        #cv2.imshow('bin', bin_im)
+        #cv2.waitKey(30)
 
         contours,hierarchy = cv2.findContours(bin_im,
                                               cv2.RETR_EXTERNAL,
@@ -183,9 +187,9 @@ class YmazeROIBuilder(TargetGridROIBuilder):
                                                                n_cols=1,
                                                                top_margin=0,
                                                                bottom_margin=0,
-                                                               left_margin = 0.5,
-                                                               right_margin = 0.5,
-                                                               horizontal_fill =  1.15,
+                                                               left_margin = 0.3,
+                                                               right_margin = 0.36,
+                                                               horizontal_fill =  1.1,
                                                                vertical_fill= 1.15
                                             )
 
@@ -198,12 +202,13 @@ class YmazeROIBuilder(TargetGridROIBuilder):
 
         # Filter by Area.
         params.filterByArea = True
-        params.minArea = 700
+        params.minArea = 400
 
         # Filter by Circularity
         params.filterByCircularity = True
-        params.minCircularity = 0.5
-        #
+        params.minCircularity = 0.32
+
+
         # Filter by Convexity
         params.filterByConvexity = True
         params.minConvexity = 0.3
@@ -380,12 +385,13 @@ if __name__ == "__main__":
     if option_dict["draw_every"] > 0:
         draw_frames = True
 
-    drawer = YmazeDrawer('~/Desktop/test_video.MP4', draw_frames=True, targets=sorted_targets)
+    drawer = YmazeDrawer(video_out='/home/diana/Desktop/example_video3.avi', draw_frames=True, targets=sorted_targets)
 
-    monit = Monitor(cam, YMazeTracker, rois)
+    #monit = Monitor(cam, YMazeTracker, rois)
+    monit = Monitor(cam, AdaptiveBGModel, rois)
 
 
-    with SQLiteResultWriter(option_dict["out"], rois) as rw:
+    with SQLiteResultWriter(option_dict["out"], rois, metadata) as rw:
         monit.run(rw, drawer)
 
     logging.info("Stopping Monitor")
