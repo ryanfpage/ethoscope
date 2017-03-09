@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Ethoscope R
+title: Rethomics
 ---
 
 <h2>Rethomics
@@ -8,24 +8,21 @@ title: Ethoscope R
     <img border="0" alt="W3Schools" src="https://cdn4.iconfinder.com/data/icons/iconsimple-logotypes/512/github-512.png" width="32" height="32">
 </a>
 </h2>
+
 <p>
     State of the art behavioural analysis can generate large amount of data.
-    For instance, assume a simple experiment running 10 Ethoscopes for 1 week.
-    In normal condition, we have two measurements a second (thins includes things like position and shape of the animal) on 20 animals.
-    This results in a total of 10 * 20 * 2 * 3600 * 24 * 7  = which is actually <b>1/4 of a billion reads</b>!
-</p>
-<p>
-    Whilst this is a large amount of data to deal with for graphical user interface based tool like Excel, this is a manageable job for statistical languages such as <a href=https://www.r-project.org/>R</a>.
-    In order to facilitate data analysis, we have developed an R package named <b>rethomics</b>.
-    It can be used for:
-</p>
+    In order to analyse these data in a an efficient statistical framework, we have designed an <a href=https://www.r-project.org/>R</a> package called <b>Rethomics</b>.
+    It can be used to analyse Ethoscope as well as DAM data.
+    The exhaustive PDF documentation...
+    Tutorial:
 
-    <ul>
-        <li>Loading data from the Ethoscope platform.</li>
-        <li>Visualising behavioural trends.</li>
-        <li>Analysing quiescence/sleep behaviour.</li>
-        <li>Analysing survival.</li>
-    </ul>
-<p>
-    Rethomics has its own exhaustive documentation, and its <a href='http://gilestrolab.github.io/rethomics/'>own website</a>.
-</p>
+
+<ul>
+{% for tuto in site.data.rethomics_tutorials %}
+  <li>
+    <h3><a href="http://gilestrolab.github.io/rethomics/tutorial/{{ tuto.url }}">
+      {{ tuto.title }}
+    </a></h3> -- {{ tuto.description }}
+  </li>
+{% endfor %}
+</ul>
