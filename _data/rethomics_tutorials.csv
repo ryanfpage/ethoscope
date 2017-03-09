@@ -1,3 +1,7 @@
 title,description,url,level,img
 Data Structure,How to organise behavioural data in statistical tables,data_structure.html,medium,queries.png
 Building Queries,A comprehensive way to record your experiments,queries.html,medium,queries.png
+Data Samples,Play with samples to get familiar with rethomics,sample_data.html,medium,queries.png
+Ethoscope Data,Learn how to import ethoscope data,ethoscope_data.html,medium,queries.png
+Overview Plots,Plot multiple single-animal traces in one graph,overview_plot.html,medium,queries.png
+
