@@ -19,7 +19,7 @@ title: Rethomics
 
 <div class="card-columns">
     {% for tuto in site.data.rethomics_tutorials %}
-  <div class="card">
+  <div style="background-color:{{ tuto.colour }}" class="card">
       <a href="http://gilestrolab.github.io/rethomics/tutorial/{{ tuto.url }}"><img class="card-img-top img-fluid" src="{{ site.baseurl }}/rethomics/img/{{ tuto.img }}" alt="Card image cap"></a>
     <div class="card-block">
       <a href=" http://gilestrolab.github.io/rethomics/tutorial/{{ tuto.url }}"><h4 class="card-title">{{ tuto.title }}</h4></a>
