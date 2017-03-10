@@ -20,9 +20,9 @@ title: Rethomics
 <div class="card-columns">
     {% for tuto in site.data.rethomics_tutorials %}
   <div class="card">
-    <img class="card-img-top img-fluid" src="{{ site.baseurl }}/rethomics/img/{{ tuto.img }}" alt="Card image cap">
+      <a href="{{ tuto.url }}"><img class="card-img-top img-fluid" src="{{ site.baseurl }}/rethomics/img/{{ tuto.img }}" alt="Card image cap"></a>
     <div class="card-block">
-      <h4 class="card-title">{{ tuto.title }}</h4>
+      <a href="{{ tuto.url }}"><h4 class="card-title">{{ tuto.title }}</h4></a>
       <p class="card-text">{{ tuto.description }}</p>
       <!--<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>-->
     </div>
