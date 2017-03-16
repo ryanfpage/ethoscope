@@ -3,3 +3,5 @@ highlighter: rouge
 safe: true
 lsi: false
 baseurl: /ethoscope
+gems:
+  - jekyll-redirect-from
