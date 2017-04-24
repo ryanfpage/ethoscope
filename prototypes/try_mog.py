@@ -3,8 +3,7 @@ __author__ = 'diana'
 import numpy as np
 import cv2
 
-cap = cv2.VideoCapture('/data/Diana/rsync_data_node/ethoscope_videos/023aeeee10184bb39b0754e75cef7900/ETHOSCOPE_023/2016-04-29_10-19-45/whole_2016-04-29_10-19-45_023aeeee10184bb39b0754e75cef7900_diana-dam-2-fly-6-etho-23-SD_1280x960@25_00000.mp4')
-
+cap = cv2.VideoCapture("/data/Diana/data_node/ethoscope_videos/064d6ba04e534be486069c3db7b10827/ETHOSCOPE_064/2017-03-08_10-13-56/video_chunks/000210.mp4")
 fgbg = cv2.BackgroundSubtractorMOG2()
 
 while(1):

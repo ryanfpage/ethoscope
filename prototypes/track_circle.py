@@ -1,26 +1,21 @@
-__author__ = 'diana'
-
-# Standard imports
 import cv2
-import numpy as np;
+import numpy as np
+import cv
 
-# Read image
-im = cv2.imread("/home/diana/Desktop/imagefile.jpg", cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('/home/diana/Desktop/circle.png',0)
+img = cv2.medianBlur(img,5)
+cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 
-params = cv2.SimpleBlobDetector_Params()
-params.filterByArea = True
-params.minArea = 500
+circles = cv2.HoughCircles(img,cv.CV_HOUGH_GRADIENT,1,32,
+                            param1=50,param2=30,minRadius=0,maxRadius=0)
 
-# Set up the detector with default parameters.
-detector = cv2.SimpleBlobDetector(params)
+circles = np.uint16(np.around(circles))
+for i in circles[0,:]:
+    # draw the outer circle
+    cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
+    # draw the center of the circle
+    cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
 
-# Detect blobs.
-keypoints = detector.detect(im)
-
-# Draw detected blobs as red circles.
-# cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob
-im_with_keypoints = cv2.drawKeypoints(im, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-# Show keypoints
-cv2.imshow("Keypoints", im_with_keypoints)
+cv2.imshow('detected circles',cimg)
 cv2.waitKey(0)
+cv2.destroyAllWindows()

@@ -11,7 +11,7 @@ from ethoscope.roi_builders.roi_builders import DefaultROIBuilder
 from ethoscope.roi_builders.target_roi_builder import TargetGridROIBuilder
 
 # change these three variables according to how you name your input/output files
-INPUT_VIDEO = "/home/quentin/comput/ethoscope-git/src/ethoscope/tests/integration_server_tests/test_video.mp4"
+INPUT_VIDEO = "/data/Diana/data_node/ethoscope_videos/064d6ba04e534be486069c3db7b10827/ETHOSCOPE_064/2017-03-08_10-13-56/video_chunks/000210.mp4"
 OUTPUT_VIDEO = "/tmp/my_output.avi"
 OUTPUT_DB = "/tmp/results.db"
 

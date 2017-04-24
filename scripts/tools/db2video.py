@@ -94,7 +94,5 @@ if __name__ == '__main__':
 
 
     make_video_file(option_dict["input"],
-                    option_dict["output"],
-                    option_dict["fps"],
-                    option_dict["annot"]
+                    option_dict["output"]
                     )

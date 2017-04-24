@@ -33,12 +33,14 @@ class BaseROIBuilder(DescribedObject):
             for i, (_, frame) in enumerate(input):
                 accum.append(frame)
                 if i  >= 5:
+                    print 'hhhaha'
                     break
 
             accum = np.median(np.array(accum),0).astype(np.uint8)
         try:
 
             rois = self._rois_from_img(accum)
+
         except Exception as e:
             if not isinstance(input, np.ndarray):
                 del input
