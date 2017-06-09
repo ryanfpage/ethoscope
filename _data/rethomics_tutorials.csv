@@ -1,4 +1,5 @@
 title,description,url,level,img,colour
+Introduction,Getting started with rethomics,introduction.html,easy,queries.png,#9dde95ff
 Data Structure,How to organise behavioural data in statistical tables,data_structure.html,medium,queries.png,#9dde95ff
 Building Queries,A comprehensive way to record your experiments,queries.html,medium,queries.png,#9dde95ff
 Data Samples, Download and play with samples to get familiar with Rethomics,sample_data.html,medium,queries.png,#9dde95ff
