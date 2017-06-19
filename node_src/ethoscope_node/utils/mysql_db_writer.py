@@ -16,14 +16,14 @@ class MySQLdbCSVWriter(object):
                             overwrite=True):
         """
 
-        A class to dump the current data base into a pandas data frame. This is going to be intially desigend and
-        tested so that it runs with the MySQL server running locally and not remotly.
+        A class to dump the current data base into a csv file. Connects to MySQL server and pulls the data in the
+        ROI tables out, writing them to a txt file. The columns are tab formatted.
 
 
-        :param db_name: the name of the database running locally.
-        :param host: the ip of the database - localhost will be fully test remote testing to follow
-        :param user: the user name for the database
-        :param pass: the password for the database
+        :param remote_db_name: the name of the database running locally.
+        :param remote_host: the ip of the database - localhost will be fully test remote testing to follow
+        :param remote_user: the user name for the database
+        :param remote_pass: the password for the database
         :param overwrite: whether the destination file should be overwritten. If False, data are appended to it
 
 
@@ -36,10 +36,10 @@ class MySQLdbCSVWriter(object):
 
             self._dst_path=dst_path
 
-            self._csv_file_name = self._dst_path+"/"+self._remote_db_name + ".csv"
-            print ("Filename:", self._csv_file_name)
+            self._csv_file_name = self._dst_path+"/"+self._remote_db_name + ".txt"
+            #print ("Filename:", self._csv_file_name)
 
-            # we remove file and create dir, if needed
+            #TODO add dir exists check and create if needed
 
             if overwrite:
                 logging.info("Trying to remove old database")
@@ -80,7 +80,7 @@ class MySQLdbCSVWriter(object):
         src_cur = src.cursor()
         src_command = "SELECT * FROM %s" % (table_name)
         src_cur.execute(src_command)
-
+        #TODO add column names to first row
         for sc in src_cur:
             with open(self._csv_file_name,"a") as f:
                 row = "\t".join(["{0}".format(val) for val in sc])
