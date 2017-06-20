@@ -170,6 +170,11 @@ app.controller('ethoscopeController', function($scope, $http, $routeParams, $int
             $http.get($scope.device.ip+':9000/static'+$scope.result_files);
         };
 
+        $scope.ethoscope.downloaddb = function(){
+            var downloadLink = angular.element('<a href="/downloaddb/'+device_id+'?ip='+$scope.device.ip+'"></a>');
+            downloadLink[0].click();
+        };
+
         $scope.ethoscope.log = function(){
             var log_file_path = ''
             if ($scope.showLog == false){
