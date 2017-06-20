@@ -76,6 +76,8 @@ class MySQLdbCSVWriter(object):
             print "ROIs: ", i
             self._update_one_roi_table("ROI_%i" % i, i, src)
 
+        src.close()
+
     def _update_one_roi_table(self, table_name, roi_num,src):
         src_cur = src.cursor()
         src_command = "SELECT * FROM %s" % (table_name)
@@ -87,3 +89,30 @@ class MySQLdbCSVWriter(object):
                 row += "\t"+str(roi_num)
                 f.write(row)
                 f.write("\n")
+
+    def enumerate_roi_tables(self):
+        """
+        Returns an iterator that will give each row. Should be less resource intensive for larger
+        databases when you want to do something with the data other than dump to a file, e.g. serve
+        directly over Bottle.
+        """
+        # Developer note: This is intentionally all in one function rather than delegating to
+        # another (a la "_update_one_roi_table") because Bottle cannot serve from nested iterables.
+        src = MySQLdb.connect(host=self._remote_host, user=self._remote_user,
+                                         passwd=self._remote_pass, db=self._remote_db_name)
+
+        command = "SELECT roi_idx FROM ROI_MAP"
+        cur = src.cursor()
+        cur.execute(command)
+        rois_in_src = set([c[0] for c in cur])
+        for i in rois_in_src :
+            src_cur = src.cursor()
+            src_command = "SELECT * FROM ROI_%i" % (i)
+            src_cur.execute(src_command)
+            #TODO add column names to first row
+            for sc in src_cur:
+                row = "\t".join(["{0}".format(val) for val in sc])
+                row += "\t"+str(i)+"\n"
+                yield row
+
+        src.close()

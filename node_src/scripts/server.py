@@ -280,15 +280,14 @@ def redirection_to_home(id):
     return redirect('/#/ethoscope/'+id)
 
 @app.get('/downloaddb/<id>')
-def dump_and_serve_db(id):
+def dynamic_serve_db(id):
+    response.headers["Content-Disposition"]="attachment; filename=ethoscope_db.txt"
     try:
         remote_host=request.query["ip"]
     except:
         remote_host="localhost"
-    print "remote_host=",remote_host
     converter = MySQLdbCSVWriter( dst_path="/tmp", remote_host=remote_host)
-    converter.update_roi_tables()
-    return static_file('/tmp/ethoscope_db.txt', root="/", download=True)
+    return converter.enumerate_roi_tables()
 
 @app.get('/device/<id>/ip')
 @error_decorator
