@@ -76,6 +76,8 @@ class MySQLdbCSVWriter(object):
             print "ROIs: ", i
             self._update_one_roi_table("ROI_%i" % i, i, src)
 
+        src.close()
+
     def _update_one_roi_table(self, table_name, roi_num,src):
         src_cur = src.cursor()
         src_command = "SELECT * FROM %s" % (table_name)
