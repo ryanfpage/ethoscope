@@ -217,7 +217,7 @@ class Device(Thread):
         last_refresh = 0
         while self._is_active:
             time.sleep(.2)
-            if time.time() - last_refresh > self._refresh_period:
+            if abs(time.time() - last_refresh) > self._refresh_period:
 
                 if not self._skip_scanning:
                     self._update_info()
