@@ -9,6 +9,11 @@
         <h2 id="dt_warning"><span class="fa fa-warning"></span> There is more than 5min difference between node and this device!!</h2>
         </div>
 
+        <div ng-if="browser_delta_t_min > 5">
+           <h2 id="dt_warning"><span class="fa fa-warning"></span>There is more than 5min difference between this device and your browser!!</h2>
+           <button ng-if="device.status == 'stopped'" class="btn btn-danger" ng-click="ethoscope.set_time_from_browser()">Set device time from browser</button>
+           <div ng-if="device.status != 'stopped'"><h3>The device time can be set from the browser only when the device is stopped</h3></div>
+        </div>
 
 
 
