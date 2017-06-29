@@ -128,6 +128,12 @@ def controls(id, action):
 
         control.start()
         return info(id)
+    elif action == 'settime':
+        # TODO check the status of ntp and maybe refuse to set the time if ntp is working
+        timeString="%02d%02d%02d%02d" % (request.json["month"],request.json["date"],request.json["hours"],request.json["minutes"])
+        logging.warning("Requested that the time be set to "+str(timeString))
+        call( ["date", "--utc", timeString] )
+        return info(id)
     else:
         raise Exception("No such action: %s" % action)
 

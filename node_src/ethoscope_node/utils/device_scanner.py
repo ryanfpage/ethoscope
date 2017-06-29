@@ -198,7 +198,8 @@ class Device(Thread):
                                      "start_record": ["stopped"],
                                      "stop": ["running", "recording"],
                                      "poweroff": ["stopped"],
-                                     "not_in_use": []}
+                                     "not_in_use": [],
+                                     "settime": ["stopped"]}
 
     def __init__(self,ip, refresh_period= 2, port = 9000, results_dir="/ethoscope_results"):
         self._results_dir = results_dir
