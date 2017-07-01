@@ -286,7 +286,7 @@ def dynamic_serve_db(id):
         remote_host=request.query["ip"]
     except:
         remote_host="localhost"
-    converter = MySQLdbCSVWriter( dst_path="/tmp", remote_host=remote_host)
+    converter = MySQLdbCSVWriter( remote_host=remote_host)
     return converter.enumerate_roi_tables()
 
 @app.get('/device/<id>/ip')
@@ -308,7 +308,7 @@ def redirection_to_more(action):
 def close(exit_status=0):
     logging.info("Closing server")
     os._exit(exit_status)
-    
+
 
 #======================================================================================================================#
 
