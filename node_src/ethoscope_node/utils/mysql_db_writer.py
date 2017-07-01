@@ -8,12 +8,12 @@ import traceback
 
 class MySQLdbCSVWriter(object):
 
-    def __init__(self, dst_path,
+    def __init__(self,
                             remote_db_name="ethoscope_db",
                             remote_host="localhost",
                             remote_user="ethoscope",
                             remote_pass="ethoscope",
-                            overwrite=True):
+                            ):
         """
 
         A class to dump the current data base into a csv file. Connects to MySQL server and pulls the data in the
@@ -34,73 +34,46 @@ class MySQLdbCSVWriter(object):
             self._remote_pass = remote_pass
             self._remote_db_name = remote_db_name
 
-            self._dst_path=dst_path
-
-            self._csv_file_name = self._dst_path+"/"+self._remote_db_name + ".txt"
-            print ("Filename:", self._csv_file_name)
-
-            #TODO add dir exists check and create if needed
-            #Only try to remove file if it already exists
-            if os.path.isfile(self._csv_file_name):
-                print ("Filename:", self._csv_file_name)
-                if overwrite:
-                    logging.info("Trying to remove old database")
-                    try:
-                        os.remove(self._csv_file_name)
-                        logging.info("Success")
-                    except OSError as e:
-                        logging.warning(e)
-                        pass
-
-
-
         except Exception as e:
             raise
 
-    def update_roi_tables(self):
+    def write_roi_tables(self, filepath, overwrite, nows, continuous):
         """
         Fetch new ROI tables from mysql database and populate in a textfile
         """
-        src = MySQLdb.connect(host=self._remote_host, user=self._remote_user,
-                                         passwd=self._remote_pass, db=self._remote_db_name)
+
+        csv_file_name = filepath+"/"+self._remote_db_name + ".txt"
+        # print ("Filename:", self._csv_file_name)
 
 
-
-
-        command = "SELECT roi_idx FROM ROI_MAP"
-        cur = src.cursor()
-        cur.execute(command)
-        rois_in_src = set([c[0] for c in cur])
-        for i in rois_in_src :
-            print "ROIs: ", i
-            self._update_one_roi_table("ROI_%i" % i, i, src)
-
-        src.close()
-
-    def _update_one_roi_table(self, table_name, roi_num,src):
-        """
-        Fetch the data from a specified table and write to file.
-        """
-        src_cur = src.cursor()
-        #Grab the col names
-
+        if os.path.isfile(csv_file_name):
+            # print ("Filename:", self._csv_file_name)
+            if overwrite:
+                logging.info("Trying to remove old database")
+                try:
+                    os.remove(csv_file_name)
+                    logging.info("Success")
+                except OSError as e:
+                    logging.warning(e)
+                    pass
+        irow = 0
+        rowgen = self.enumerate_roi_tables()
+        print("Filename:", csv_file_name)
         try:
-            src_command = "SELECT * FROM %s" % (table_name)
-            src_cur.execute(src_command)
-            num_fields = len(src_cur.description)
-            field_names = [i[0] for i in src_cur.description]
-            #print "Field Names: ", field_names
-            row_names = "\t".join([name for name in field_names])
-            row_names += "\t"+"roi"+"\n"
-            for sc in src_cur:
-                with open(self._csv_file_name,"a") as f:
-                    row = "\t".join(["{0}".format(val) for val in sc])
-                    row += "\t"+str(roi_num)
+            with open(csv_file_name,"a") as f:
+                for row in rowgen:
                     f.write(row)
                     f.write("\n")
-        except TypeError as e:
-            logging.warning(e)
-            pass
+                    if (continuous is not True) and (irow < nows):
+                        irow = irow + 1
+                    elif continuous is not True:
+                        break
+            f.close()
+            print('Closing file')
+        except Exception as e:
+            print e
+            raise
+
 
 
     def enumerate_roi_tables(self):
@@ -124,7 +97,7 @@ class MySQLdbCSVWriter(object):
             src_command = "SELECT * FROM ROI_%i" % (i)
             src_cur.execute(src_command)
             if rowiter == 0:
-                field_names = [i[0] for i in src_cur.description]
+                field_names = [j[0] for j in src_cur.description]
                 row_names = "\t".join([name for name in field_names])
                 row_names += "\t"+"roi"+"\n"
                 rowiter = rowiter + 1

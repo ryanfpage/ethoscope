@@ -6,18 +6,18 @@ import logging
 import traceback
 import re
 
-def TestMySQLDump():
+def TestMySQLDumpCSV():
 
     try:
 
-        mirror = MySQLdbCSVWriter("/Users/phrfp/Software/anaconda2/envs/ethoscope/home/tmp",
+        mirror = MySQLdbCSVWriter(
                         remote_db_name="test_etho_db",
                         remote_host="localhost",
                         remote_pass="",
                         remote_user="root")
 
 
-        mirror.update_roi_tables()
+        mirror.write_roi_tables("/Users/phrfp/Software/anaconda2/envs/ethoscope/home/tmp", True,10, False)
 
 
     except Exception as e:
@@ -28,7 +28,7 @@ def TestMySQLDump_Enumerate():
 
     try:
 
-        mirror = MySQLdbCSVWriter("/Users/phrfp/Software/anaconda2/envs/ethoscope/home/tmp",
+        mirror = MySQLdbCSVWriter(
                         remote_db_name="test_etho_db",
                         remote_host="localhost",
                         remote_pass="",
@@ -53,6 +53,7 @@ def TestMySQLDump_Enumerate():
                 assert_equal(testrow[1], "8000", "Error: first column should be 8000")
                 assert_equal(len(testrow), 11, "Error should have 11 columns in the current format")
                 assert_equal(testrow[7], "-280", "Error: 7th column should be -280")
+                assert_equal(testrow[10], "2", "Error: 10th column should be 2")
                 break
     except Exception as e:
         print e
