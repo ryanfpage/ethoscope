@@ -17,7 +17,7 @@ def TestMySQLDumpCSV():
                         remote_user="root")
 
 
-        mirror.write_roi_tables("/Users/phrfp/Software/anaconda2/envs/ethoscope/home/tmp", True,10, False)
+        mirror.write_roi_tables("./test_data", True, 10, True)
 
 
     except Exception as e:
