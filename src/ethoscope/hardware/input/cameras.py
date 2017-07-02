@@ -35,6 +35,7 @@ class BaseCamera(object):
 
         self._drop_each = drop_each
         self._max_duration = max_duration
+        self._metadata = {}
 
     def __exit__(self):
         logging.info("Closing camera")
@@ -91,6 +92,27 @@ class BaseCamera(object):
         :rtype: int
         """
         return self._resolution[1]
+
+    def metadata(self,name):
+        """
+        Retrieve some metadata about the camera.
+
+        :param name: the name for the data item to request (e.g. "analog_gain")
+        :type name: str
+        :return: the data requested if it exists
+
+        Raises a KeyError if the metadata item does not exist.
+        """
+        return self._metadata[name]
+
+    def available_metadata(self):
+        """
+        Returns the names of all the metadata items that are available.
+
+        :return: the names of all available metadata items
+        :rtype name: list of str
+        """
+        return self._metadata.keys()
 
     def _next_time_image(self):
         time = self._time_stamp()
@@ -311,7 +333,7 @@ class V4L2Camera(BaseCamera):
 
 class PiFrameGrabber(multiprocessing.Process):
 
-    def __init__(self, target_fps, target_resolution, queue,stop_queue, *args, **kwargs):
+    def __init__(self, target_fps, target_resolution, queue, meta_queue, stop_queue, *args, **kwargs):
         """
         Class to grab frames from pi camera. Designed to be used within :class:`~ethoscope.hardware.camreras.camreras.OurPiCameraAsync`
         This allows to get frames asynchronously as acquisition is a bottleneck.
@@ -321,7 +343,9 @@ class PiFrameGrabber(multiprocessing.Process):
         :param target_resolution: the desired resolution (w, h)
         :type target_resolution: (int, int)
         :param queue: a queue that stores frame and makes them available to the parent process
-        :type queue: :class:`~multiprocessing.JoinableQueue`
+        :type queue: :class:`~multiprocessing.Queue`
+        :param meta_queue: a queue that communicates meta data from the camera (currently just the analogue gain)
+        :type meta_queue: :class:`~multiprocessing.Queue`
         :param stop_queue: a queue that can stop the async acquisition
         :type stop_queue: :class:`~multiprocessing.JoinableQueue`
         :param args: additional arguments
@@ -329,6 +353,7 @@ class PiFrameGrabber(multiprocessing.Process):
         """
 
         self._queue = queue
+        self._meta_queue = meta_queue
         self._stop_queue = stop_queue
         self._target_fps = target_fps
         self._target_resolution = target_resolution
@@ -371,6 +396,7 @@ class PiFrameGrabber(multiprocessing.Process):
                     #fixme here we could actually pass a JPG compressed file object (http://docs.scipy.org/doc/scipy-0.16.0/reference/generated/scipy.misc.imsave.html)
                     # This way, we would manage to get faster FPS
                     self._queue.put(out)
+                    self._meta_queue.put({"analog_gain":capture.analog_gain})
         finally:
             logging.warning("Closing frame grabber process")
             self._stop_queue.close()
@@ -404,8 +430,9 @@ class OurPiCameraAsync(BaseCamera):
         self._args = args
         self._kwargs = kwargs
         self._queue = multiprocessing.Queue(maxsize=1)
+        self._meta_queue = multiprocessing.Queue(maxsize=1) # queue to transfer metadata
         self._stop_queue = multiprocessing.JoinableQueue(maxsize=1)
-        self._p = self._frame_grabber_class(target_fps,target_resolution,self._queue,self._stop_queue, *args, **kwargs)
+        self._p = self._frame_grabber_class(target_fps,target_resolution,self._queue,self._meta_queue,self._stop_queue, *args, **kwargs)
         self._p.daemon = True
         self._p.start()
         try:
@@ -413,9 +440,12 @@ class OurPiCameraAsync(BaseCamera):
         except Exception as e:
             logging.error("Could not get any frame from the camera")
             self._stop_queue.cancel_join_thread()
+            self._meta_queue.cancel_join_thread()
             self._queue.cancel_join_thread()
             logging.warning("Stopping stop queue")
             self._stop_queue.close()
+            logging.warning("Stopping meta data queue")
+            self._meta_queue.close()
             logging.warning("Stopping queue")
             self._queue.close()
             logging.warning("Joining process")
@@ -470,13 +500,18 @@ class OurPiCameraAsync(BaseCamera):
     def _close(self):
         logging.info("Requesting grabbing process to stop!")
         self._stop_queue.put(None)
+        while not self._meta_queue.empty():
+             self._meta_queue.get()
         while not self._queue.empty():
              self._queue.get()
         logging.info("Joining stop queue")
         self._stop_queue.cancel_join_thread()
+        self._meta_queue.cancel_join_thread()
         self._queue.cancel_join_thread()
         logging.info("Stopping stop queue")
         self._stop_queue.close()
+        logging.info("Stopping meta data queue")
+        self._meta_queue.close()
         logging.info("Stopping queue")
         self._queue.close()
         logging.info("Joining process")
@@ -486,6 +521,7 @@ class OurPiCameraAsync(BaseCamera):
     def _next_image(self):
         try:
             g = self._queue.get(timeout=30)
+            self._metadata = self._meta_queue.get(timeout=30)
             cv2.cvtColor(g,cv2.COLOR_GRAY2BGR,self._frame)
             return self._frame
         except Exception as e:
