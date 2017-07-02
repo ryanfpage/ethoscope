@@ -257,7 +257,8 @@ class Device(Thread):
                                      "start_record": ["stopped"],
                                      "stop": ["running", "recording"],
                                      "poweroff": ["stopped"],
-                                     "not_in_use": []}
+                                     "not_in_use": [],
+                                     "settime": ["stopped"]}
 
     def __init__(self,ip, refresh_period= 2, port = 9000, results_dir="/ethoscope_results"):
         self._results_dir = results_dir
@@ -276,7 +277,7 @@ class Device(Thread):
         last_refresh = 0
         while self._is_active:
             time.sleep(.2)
-            if time.time() - last_refresh > self._refresh_period:
+            if abs(time.time() - last_refresh) > self._refresh_period:
 
                 if not self._skip_scanning:
                     self._update_info()
