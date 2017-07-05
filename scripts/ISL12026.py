@@ -1,5 +1,6 @@
 import smbus
 import time
+from datetime import datetime
 
 # Class to talk to the ISL1206 RTC using I2C protocol.
 # Written by P. Baesso - RYMAPT LTD
@@ -25,7 +26,8 @@ class ISL12026:
 		formattedTimestamp[2]= self.__parseReg(datetimeList[3])
 		formattedTimestamp[1]= self.__parseReg(datetimeList[4])
 		formattedTimestamp[0]= 100*(self.__parseReg(datetimeList[7])) + (self.__parseReg(datetimeList[5]))
-		return formattedTimestamp
+		myDate= datetime(formattedTimestamp[0], formattedTimestamp[1], formattedTimestamp[2], formattedTimestamp[3], formattedTimestamp[4], formattedTimestamp[5])
+		return myDate
 		
 	def __parseReg(self, inChar):
 		units= inChar & 0x0F
