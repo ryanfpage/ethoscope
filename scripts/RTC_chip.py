@@ -28,11 +28,15 @@ myDevice= easyi2c.IIC(DEVICE_ADDRESS, 1) #address and bus
 #myData = bus.read_byte(DEVICE_ADDRESS) # this will read at the current address pointer, which we on the previous line
 #print hex(myData)
 
+#Check status
+bus.write_byte_data(DEVICE_ADDRESS, 0x00, 0x3F) # the 0x00, 0x00 is the '16 bit' address split into 2 bytes
+myData = bus.read_byte(DEVICE_ADDRESS) # this will read at the current address pointer, which we on the previous line
+print 'Status', hex(myData)
 
 #Write current date/time
 #bus.write_i2c_block_data(DEVICE_ADDRESS,0x00,[0x3F, 0x02]) #write 0x02 to SR to set WEL
 #bus.write_i2c_block_data(DEVICE_ADDRESS,0x00,[0x3F, 0x06]) #write 0x06 to SR to set WEL and RWEL
-#bus.write_i2c_block_data(DEVICE_ADDRESS,0x00,[0x30, 0x15, 0x05, 0x98, 0x02, 0x07, 0x17, 0x00, 0x20]) #write to RTC registers
+#bus.write_i2c_block_data(DEVICE_ADDRESS,0x00,[0x30, 0x45, 0x22, 0x91, 0x04, 0x07, 0x17, 0x03, 0x20]) #write to RTC registers
 
 #Read current date/time
 myDateTime=[]
@@ -41,4 +45,4 @@ for iData in range(0,8):
 	myData = bus.read_byte(DEVICE_ADDRESS) # this will read at the current address pointer, which we on the previous line
 	myDateTime.append(myData)
 	print 'Reg', hex(0x30+iData), hex(myData)
-print myDateTime
+#print myDateTime
