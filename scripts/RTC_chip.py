@@ -18,7 +18,7 @@ myDevice= easyi2c.IIC(DEVICE_ADDRESS, 1) #address and bus
 
 ###THIS WORKS
 #easyi2c
-#myData=myDevice.i2c([0x00,0x3F],1) 
+#myData=myDevice.i2c([0x00,0x3F],1)
 #for iChar in myData:
 #	print hex(iChar)
 
