@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 # Class to talk to the ISL1206 RTC using I2C protocol.
-# Written by P. Baesso - RYMAPT LTD
+# Written by P. Baesso - RYMAPT LTD - 2017
 
 class ISL12026:
 # Define the SMBus interface
