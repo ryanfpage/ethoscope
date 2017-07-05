@@ -14,6 +14,8 @@ class ISL12026:
 	
 	def __parseDate(self, datetimeList):
 		print datetimeList
+		for iValue in datetimeList:
+			print self.DATE_LIST[iValue]
 		
 	def __parseReg(self, inChar):
 		units= inChar & 0x0F
@@ -48,6 +50,6 @@ class ISL12026:
 			self.bus.write_byte_data(self.DEVICE_ADDRESS, 0x00, 0x30+iData) # the 0x00, 0x00 is the '16 bit' address split into 2 bytes
 			myData = self.bus.read_byte(self.DEVICE_ADDRESS) # this will read at the current address pointer, which we on the previous line
 			myDateTime.append(myData)
-			print self.DATE_LIST[iData], self.__parseReg(myData)
-		
+			#print self.DATE_LIST[iData], self.__parseReg(myData)
+		return myDateTime
 		#self.__parseDate(myDateTime)
