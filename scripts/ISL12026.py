@@ -14,12 +14,9 @@ class ISL12026:
 		self.DATE_LIST= ['SEC', 'MIN', 'HR', 'DATE', 'MONTH', 'YR', 'DAY', 'Y2K']
 	
 	
-	def __parseDate(self, datetimeList):
+	def __parseDateList(self, datetimeList):
+		#Takes a list containing timestamp values and returns a datetime object.
 		formattedTimestamp=[-1, -1, -1, -1, -1, -1]
-		#for index, iValue in enumerate(datetimeList):
-		#	if (index == 2) :
-		#		iValue= self.__parseHour(iValue)
-		#	print self.DATE_LIST[index], self.__parseReg(iValue)
 		formattedTimestamp[5]= self.__parseReg(datetimeList[0])
 		formattedTimestamp[4]= self.__parseReg(datetimeList[1])
 		formattedTimestamp[3]= self.__parseHour(datetimeList[2])
@@ -28,6 +25,18 @@ class ISL12026:
 		formattedTimestamp[0]= 100*(self.__parseReg(datetimeList[7])) + (self.__parseReg(datetimeList[5]))
 		myDate= datetime(formattedTimestamp[0], formattedTimestamp[1], formattedTimestamp[2], formattedTimestamp[3], formattedTimestamp[4], formattedTimestamp[5])
 		return myDate
+		
+	def __parseDateList(self, datetimeObj):
+		#Takes a python datetime object and returns a list that can be written into the RTC chip.
+		year= datetimeObj.year()
+		month= datetimeObj.month()
+		day= datetimeObj.day()
+		hour= datetimeObj.hour()
+		minute= datetimeObj.minute()
+		second= datetimeObj.second()
+		weekday= datetimeObj.weekday()
+		
+		#return myDate
 		
 	def __parseReg(self, inChar):
 		units= inChar & 0x0F
@@ -87,6 +96,6 @@ class ISL12026:
 			myData = self.bus.read_byte(self.DEVICE_ADDRESS) # this will read at the current address pointer, which we on the previous line
 			myDateTime.append(myData)
 			#print self.DATE_LIST[iData], self.__parseReg(myData)
-		formattedTimestamp= self.__parseDate(myDateTime)
+		formattedTimestamp= self.__parseDateList(myDateTime)
 		return formattedTimestamp
 		
