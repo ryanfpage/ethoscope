@@ -41,7 +41,6 @@ class TestTargetROIBuilder(unittest.TestCase):
         root_dir = os.path.dirname(os.path.abspath(__file__)) # where all the test paths are relative to
         for k,i in images.items():
             out = os.path.join(root_dir,LOG_DIR,k+".png")
-            print out
             self._test_one_img(os.path.join(root_dir,i),out)
 
 
