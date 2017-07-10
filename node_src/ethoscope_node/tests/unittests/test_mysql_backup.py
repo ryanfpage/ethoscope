@@ -62,6 +62,9 @@ class TestMySQLCSVWriter(unittest.TestCase):
                     assert_equal(testrow[7], "-280", "Error: 7th column should be -280")
                     assert_equal(testrow[10], "2", "Error: 10th column should be 2")
                     break
+
+            self.assertEquals(irow,1)
+
         except Exception as e:
             print e
             logging.error(traceback.format_exc(e))
