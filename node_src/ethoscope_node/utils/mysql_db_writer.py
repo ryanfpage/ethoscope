@@ -49,16 +49,16 @@ class MySQLdbCSVWriter(object):
         if os.path.isfile(csv_file_name):
             # print ("Filename:", self._csv_file_name)
             if overwrite:
-                logging.info("Trying to remove old database")
+                logging.info("MySQLdbCSVWriter trying to remove old database")
                 try:
                     os.remove(csv_file_name)
-                    logging.info("Success")
+                    logging.info("MySQLdbCSVWriter success")
                 except OSError as e:
                     logging.warning(e)
                     pass
         irow = 0
         rowgen = self.enumerate_roi_tables()
-        print("Filename:", csv_file_name)
+        logging.info("MySQLdbCSVWriter writing to file:", csv_file_name)
         try:
             with open(csv_file_name,"a") as f:
                 for row in rowgen:
@@ -69,7 +69,7 @@ class MySQLdbCSVWriter(object):
                     elif continuous is not True:
                         break
             f.close()
-            print('Closing file')
+            logging.info('MySQLdbCSVWriter closing file')
         except Exception as e:
             print e
             raise
