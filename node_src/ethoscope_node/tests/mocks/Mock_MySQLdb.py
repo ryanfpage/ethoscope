@@ -66,4 +66,6 @@ def connect(**kwargs):
 # Overwrite the connect function in MySQLdb so that the mock classes are
 # used instead.
 import MySQLdb
-MySQLdb.connect = connect
+MySQLdb.original_connect = MySQLdb.connect # make a note so that it can be restored if necessary
+MySQLdb.overriden_connect = connect
+MySQLdb.connect = MySQLdb.overriden_connect # Default to overriding
