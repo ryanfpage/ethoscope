@@ -7,36 +7,58 @@ So far not very exhaustive mocking, but this will be expanded as the test cases 
 
 import collections
 
-class MockDBCursor(object):
-    mock_results = collections.deque([[1]])
-    description = []
+class MockDBConnection(object):
+    execute_results = {}
 
-    def __init__(self, parentDB):
-        super(MockDBCursor,self).__init__()
-        self._parentDB = parentDB
+    #
+    # Methods to set up the mocking behaviour
+    #
+    @staticmethod
+    def addMockResult(command, results, description):
+        """
+        Static method to set the results that a call to "execute" should give.
+        """
+        MockDBConnection.execute_results[command] = {"results": collections.deque(results), "description": description}
+
+    #
+    # Methods for the class returned by MySQLdb.connect
+    #
+    def __init__(self,**kwargs):
+        super(MockDBConnection,self).__init__()
+        self._kwargs = kwargs
+        self._mock_results = []
+        self.description = []
     
+    def cursor(self):
+        return self
+
+    def close(self):
+        pass
+
+    #
+    # Methods from the cursor class
+    #
     def __iter__(self):
         return self
 
     def next(self):
-        if len(MockDBCursor.mock_results) == 0:
+        if len(self._mock_results) == 0:
             raise StopIteration
-        return MockDBCursor.mock_results.popleft()
+        return self._mock_results.popleft()
 
     def execute(self,command):
-        pass
+        self._mock_results = []
+        self.description = []
+
+        try:
+            mockResults = MockDBConnection.execute_results[command]
+        except KeyError:
+            return
+
+        self._mock_results = mockResults["results"]
+        self.description = mockResults["description"]
 
 
-class MockDBConnection(object):
-    def __init__(self,**kwargs):
-        super(MockDBConnection,self).__init__()
-        self._kwargs = kwargs
-    
-    def cursor(self):
-        return MockDBCursor(self)
-    
-    def close(self):
-        pass
 
 def connect(**kwargs):
     return MockDBConnection(**kwargs)
