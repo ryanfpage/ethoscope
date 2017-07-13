@@ -14,6 +14,7 @@ from ethoscope.hardware.input.cameras import OurPiCameraAsync, MovieVirtualCamer
 from ethoscope.roi_builders.target_roi_builder import  OlfactionAssayROIBuilder, SleepMonitorWithTargetROIBuilder, TargetGridROIBuilder
 from ethoscope.roi_builders.roi_builders import  DefaultROIBuilder
 from ethoscope.core.monitor import Monitor
+from ethoscope.core.conditions_monitor import ConditionsMonitor, ConditionVariable
 from ethoscope.drawers.drawers import NullDrawer, DefaultDrawer
 from ethoscope.trackers.adaptive_bg_tracker import AdaptiveBGModel
 from ethoscope.hardware.interfaces.interfaces import HardwareConnection
@@ -171,6 +172,7 @@ class ControlThread(Thread):
                         "experimental_info": {}
                         }
         self._monit = None
+        self._conditionsMonitor = None
 
         self._parse_user_options(data)
 
@@ -303,10 +305,25 @@ class ControlThread(Thread):
         self._monit = Monitor(camera, TrackerClass, rois,
                               stimulators=stimulators,
                               *self._monit_args)
+
+        conditionVariables = []
+        try:
+            variable = camera.metadata("analog_gain") # This might fail depending on the type of camera
+            conditionVariables.append( ConditionVariable(variable, "camera_gain") )
+        except KeyError as error:
+            # analog_gain is not part of the meta data for this camera
+            logging.warning("Unable to get the camera gain to add to the condition database")
+        self._conditionsMonitor = ConditionsMonitor( conditionVariables )
+        dbConnectionString = "mysql://"+self._db_credentials["user"]+":"+self._db_credentials["password"]+"@localhost/"+self._db_credentials["name"]
+
         self._info["status"] = "running"
         logging.info("Setting monitor status as running: '%s'" % self._info["status"])
 
-        self._monit.run(result_writer, self._drawer)
+        # Align the times in the database tables as closely as possible. The conditions monitor only updates
+        # every 30 seconds by default, so some small difference is acceptable.
+        self._conditionsMonitor.setTime(0)
+        self._conditionsMonitor.run(dbConnectionString) # This runs asynchronously
+        self._monit.run(result_writer, self._drawer) # This blocks
 
     def _set_tracking_from_pickled(self):
         with open(self._persistent_state_file, "r") as f:
@@ -462,6 +479,10 @@ class ControlThread(Thread):
         if not self._monit is None:
             self._monit.stop()
             self._monit = None
+        logging.info("Stopping conditions monitor")
+        if not self._conditionsMonitor is None:
+            self._conditionsMonitor.stop()
+            self._conditionsMonitor = None
 
         self._info["status"] = "stopped"
         self._info["time"] = time.time()
