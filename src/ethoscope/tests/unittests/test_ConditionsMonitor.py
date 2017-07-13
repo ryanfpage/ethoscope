@@ -50,7 +50,7 @@ class TestConditionsMonitor(unittest.TestCase):
             monitor.updatePeriod(0.01) # Update every hundredth of a second to speed up the tests
             startTime = time.time()
             monitor.setTime(0) # Test setting a time offset by specifying 'now' as 0 time
-            monitor.run(engine)
+            monitor.run(sqlalchemy_engine=engine)
             time.sleep(1)
             monitor.stop()
             stopTime = time.time()

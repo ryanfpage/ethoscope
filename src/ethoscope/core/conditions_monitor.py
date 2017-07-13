@@ -107,9 +107,27 @@ class ConditionsMonitor(object):
         self._pollingCondition = multiprocessing.Condition()
         self._process = ConditionsProcess(self._keepRunning, self._updatePeriodSeconds, self._pollingCondition, conditionVariables)
 
-    def run(self, sqlalchemy_engine = None):
+    def run(self, connection_address=None, sqlalchemy_engine = None):
+        """
+        Start the monitor running asynchronously in another process. Use 'stop()' to stop it. You need to provide a place
+        to send the results by providing an SQL database location, e.g.
+
+            "mysql://username:password@localhost/database_name"
+            "sqlite:///myfile.sqlite3"
+
+        The strings are in the format required by sqlalchemy. You can also instead provide an sqlalchemy engine directly with the
+        sqlalchemy_engine keyword parameter. For a full list of possible strings, and how to configure your own engine, see
+
+            http://docs.sqlalchemy.org/en/latest/core/engines.html
+
+        """
         if sqlalchemy_engine:
+            if connection_address!= None : logging.warning("ConditionsMonitor: An SQLAlchemy engine was provided, so the value of connection_address is being ignored")
             self._process.set_writer(sqlalchemy_engine)
+        elif connection_address:
+            self._process.set_writer( sqlalchemy.create_engine(connection_address) )
+        else:
+            raise Exception("ConditionsMonitor.run() called without a connection address or SQLAlchemy engine")
         self._process.start()
 
     def stop(self):
