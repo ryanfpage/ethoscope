@@ -457,7 +457,7 @@ class OurPiCameraAsync(BaseCamera):
             else:
                 logging.info('Maximal effective resolution is "%s"' % str(self._resolution))
         super(OurPiCameraAsync, self).__init__(*args, **kwargs)
-        if hasattr(self._p, "analog_gain"): self._metadata["analog_gain"] = self._p._analog_gain # has to be after the super because it uses _metadata from the super class
+        if hasattr(self._p, "_analog_gain"): self._metadata["analog_gain"] = self._p._analog_gain # has to be after the super because it uses _metadata from the super class
         self._start_time = time.time()
         logging.info("Camera initialised")
 
