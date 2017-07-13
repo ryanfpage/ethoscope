@@ -12,8 +12,12 @@
 #
 import io
 import fcntl
+import struct
 
 I2C_SLAVE=0x0703
+I2C_SMBUS=0x0720
+I2C_SMBUS_WRITE=0
+I2C_SMBUS_QUICK=0
 
 # linuxi2c.py
 # 2017-03-19
@@ -33,10 +37,19 @@ class IIC:
       fcntl.ioctl(self.fr, I2C_SLAVE, device)
       fcntl.ioctl(self.fw, I2C_SLAVE, device)
 
+      # This represents the i2c_smbus_ioctl_data structure required for a quick write.
+      # See linux/i2c-dev.h for a description of the structure (e.g.
+      # https://github.com/torvalds/linux/blob/master/include/uapi/linux/i2c-dev.h#L56)
+      # It's actually all zeros, but it's written out explicitly for clarity
+      self._writeQuickArgument=struct.pack("@BBIP", I2C_SMBUS_WRITE, 0, I2C_SMBUS_QUICK, 0)
+
    def write(self, data):
       if type(data) is list:
          data = bytes(data)
       self.fw.write(data)
+
+   def write_quick(self):
+       fcntl.ioctl(self.fw, I2C_SMBUS, self._writeQuickArgument)
 
    def read(self, count):
       s = ''
