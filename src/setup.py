@@ -33,7 +33,8 @@ setup(
     install_requires=[
         "numpy>=1.6.1",
         "scipy >= 0.15.1",
-        "zeroconf>=0.19.1"
+        "zeroconf>=0.19.1",
+        "SQLAlchemy"
     ],
     tests_require=['nose', 'mock'],
     test_suite='nose.collector'
