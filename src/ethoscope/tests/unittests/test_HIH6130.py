@@ -10,8 +10,8 @@ __license__   = "MIT"
 # MIT licence is available at https://opensource.org/licenses/MIT
 
 import unittest
-import easyi2c
-from HIH6130 import HIH6130
+import ethoscope.hardware.input.easyi2c as easyi2c
+from ethoscope.hardware.input.HIH6130 import HIH6130
 
 class TestTargetROIBuilder(unittest.TestCase):
     def test_constructWitheasyi2c(self):
