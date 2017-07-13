@@ -1,8 +1,16 @@
+"""
+Class to talk to the HIH6130 humidity and temperature sensor using I2C protocol.
+
+Note that it requires a modified version of easyi2c with a write_quick() method. This
+should have been given to you along with this file.
+"""
 import time
 import easyi2c
 
-# Class to talk to the HIH6130 humidity and temperature sensor using I2C protocol.
-# Written by P. Baesso - RYMAPT LTD - 2017
+__author__    = "Paolo Baesso, Mark Grimes"
+__copyright__ = "Copyright 2017, Rymapt Ltd"
+__license__   = "MIT"
+# MIT licence is available at https://opensource.org/licenses/MIT
 
 class HIH6130:
     def __init__(self, easybus=None):
