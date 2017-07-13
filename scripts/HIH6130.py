@@ -1,4 +1,3 @@
-import smbus
 import time
 import easyi2c
 
@@ -6,16 +5,27 @@ import easyi2c
 # Written by P. Baesso - RYMAPT LTD - 2017
 
 class HIH6130:
-    def __init__(self, SMBus, easybus):
-        # Define the SMBus interface
-        self.bus= SMBus
-        self.easyi2c= easybus
-        self.DEVICE_ADDRESS = 0x27      #7 bit address (will be left shifted to add the read write bit)
+    def __init__(self, easybus=None):
+        if easybus:
+            self.easyi2c = easybus
+            return
+
+        DEVICE_ADDRESS = 0x27      #7 bit address (will be left shifted to add the read write bit)
+        # Figure out which bus to use by seeing what devices are present
+        import os
+        if os.path.exists("/dev/i2c-0"):
+            I2C_BUS = 0
+        elif os.path.exists("/dev/i2c-1"):
+            I2C_BUS = 1
+        else:
+            raise Exception("HIH6130: can't access the I2C bus on either '/dev/i2c-0' or '/dev/i2c-1'. Have you enabled I2C in the kernel?")
+
+        self.easyi2c = easyi2c.IIC(DEVICE_ADDRESS, I2C_BUS)
 
     def __refreshData(self):
         # Perform a write operation, with no register or data, to tell the HIH6130
         # to refresh the temperature and pressure reading.
-        self.bus.write_quick(self.DEVICE_ADDRESS)
+        self.easyi2c.write_quick()
         # Conversion time is ~37 ms. Pause the code to ensure new data is ready.
         time.sleep(0.1)
 
