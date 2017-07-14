@@ -35,8 +35,8 @@ class TestHIH6130(unittest.TestCase):
         # Test the temperature. These temperatures are taken from the documented
         # operating temperature, so if you're testing when the temperature is outside
         # this range the chip probably won't work anyway.
-        self.assertGreaterEqual(data[1], -25)
-        self.assertLessEqual(data[1], 85)
+        self.assertGreaterEqual(data[2], -25)
+        self.assertLessEqual(data[2], 85)
 
 if __name__ == "__main__":
     unittest.main()
