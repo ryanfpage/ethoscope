@@ -12,7 +12,7 @@ __copyright__ = "Copyright 2017, Rymapt Ltd"
 __license__   = "MIT"
 # MIT licence is available at https://opensource.org/licenses/MIT
 
-class HIH6130:
+class HIH6130(object):
     def __init__(self, easybus=None):
         if easybus:
             self.easyi2c = easybus
@@ -71,3 +71,33 @@ class HIH6130:
         self.__refreshData()
         outList= self.__parseData(self.__readData())
         return outList
+
+class BufferedHIH6130(HIH6130):
+    """
+    Stores results from HIH6130 for a set amount of time (default 2 seconds), and returns the buffered
+    value if data is requested in that time. Also adds "temperature()" and "humidity()" methods to return
+    just those values. Since the data is buffered, a call to e.g. temperature() directly after humidity()
+    won't result in two exchanges with the chip.
+    """
+    def __init__(self, updateTime=2, easybus=None):
+        super(BufferedHIH6130,self).__init__(easybus)
+        self._updateTime = updateTime
+        self.update()
+
+    def timeSinceUpdate(self):
+        return time.time()-self._lastUpdateTime
+
+    def update(self):
+        self._data = super(BufferedHIH6130,self).getData()
+        self._lastUpdateTime = time.time()
+
+    def temperature(self):
+        return self.getData()[2]
+
+    def humidity(self):
+        return self.getData()[1]
+
+    def getData(self): # override the version in the base class
+        if self.timeSinceUpdate() > self._updateTime:
+            self.update()
+        return self._data
