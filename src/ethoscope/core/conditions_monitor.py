@@ -83,7 +83,17 @@ class ConditionsProcess(multiprocessing.Process):
                                      sqlalchemy.Column('id', sqlalchemy.Integer, sqlalchemy.Sequence('entry_id_seq'), primary_key=True),
                                      sqlalchemy.Column('t', sqlalchemy.Integer ) )
             for variable in self._conditionVariables:
-                table.append_column( sqlalchemy.Column( variable.name(), sqlalchemy.Integer) )
+                # Get one value to see what type it is
+                valueType = sqlalchemy.Integer
+                try:
+                    value = variable.value()
+                    if type(value) is float: valueType = sqlalchemy.Float
+                    elif type(value) is int: valueType = sqlalchemy.Integer
+                    else:
+                        logging.warning("Unable to determine database type for '"+str(type(value))+"', assuming integer")
+                except Exception as error:
+                    logging.error("Unable to determine database type for '"+variable.name()+"' "+str(error))
+                table.append_column( sqlalchemy.Column( variable.name(), valueType) )
             metadata.create_all(self._sqlalchemy_engine)
 
             while self._keepRunning.value:

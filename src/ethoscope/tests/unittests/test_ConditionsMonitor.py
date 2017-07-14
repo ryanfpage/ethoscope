@@ -37,13 +37,23 @@ class DummyTestingConditionVariable(object):
     def reset(self):
         self._nextIndex = 0
 
+class DummyFloatConditionVariable(DummyTestingConditionVariable):
+    """
+    Same as DummyTestingConditionVariable except the returned value is a float
+    """
+    def __init__(self, name="RandomNumber", size=50):
+        super(DummyFloatConditionVariable,self).__init__(name,size)
+        # Run through and change the numbers to floats by dividing by 100
+        for index in xrange(0,len(self._values)):
+            self._values[index] = float(self._values[index])/100.0
+
 class TestConditionsMonitor(unittest.TestCase):
     def test_insertingRandomNumbers(self):
         # In memory SQLite databases won't work because they're released before I can check
         # the results. Use a random portion to the filename to minimise chances of a clash
         temporaryFilename = "tmp_test_db_"+str(random.randint(0,1000))+".sqlite"
         try:
-            variables = [DummyTestingConditionVariable("Field1"), DummyTestingConditionVariable("Field2")]
+            variables = [DummyTestingConditionVariable("Field1"), DummyTestingConditionVariable("Field2"), DummyFloatConditionVariable("FloatField")]
             monitor = ConditionsMonitor(variables)
             engine = sqlalchemy.create_engine('sqlite:///'+temporaryFilename)
             #engine = sqlalchemy.create_engine('mysql://ethoscope:ethoscope@localhost/ethoscope_db', echo=True)
@@ -58,18 +68,33 @@ class TestConditionsMonitor(unittest.TestCase):
             # Now check the results that were inserted
             metadata = sqlalchemy.MetaData(engine)
             table = sqlalchemy.Table( monitor.tableName(), metadata, autoload=True )
+            # Make sure the columns are the correct type
+            columnsChecked = 0
+            for column in table.columns:
+                if column.name=="Field1":
+                    self.assertEqual( "INTEGER", str(column.type) )
+                    columnsChecked += 1
+                elif column.name=="Field2":
+                    self.assertEqual( "INTEGER", str(column.type) )
+                    columnsChecked += 1
+                elif column.name=="FloatField":
+                    self.assertEqual( "FLOAT", str(column.type) )
+                    columnsChecked += 1
+            self.assertEqual( 3, columnsChecked )
+            # Query the database for the values
             select = sqlalchemy.select([table])
             connection = engine.connect()
             results = connection.execute( select )
-            variables[0].reset() # Reset so that I get the same sequence of numbers
-            variables[1].reset()
+            for variable in variables:
+                variable.reset()
+                variable.value() # Advance by 1 because internally ConditionsMonitor retrieves 1 value to get its type
             index = 0
             for index, row in enumerate(results):
                 self.assertEqual(row[0], index+1) # Check index increases by 1 each time
                 self.assertGreaterEqual(row[1], 0) # Check time is greater than the reference time I set (zero)
                 self.assertLessEqual(row[1], (stopTime-startTime)*1000) # default is to store time in milliseconds
-                self.assertEqual(row[2], variables[0].value())
-                self.assertEqual(row[3], variables[1].value())
+                for variableIndex, variable in enumerate(variables):
+                    self.assertEqual(row[variableIndex+2], variable.value())
             self.assertGreaterEqual(index, 10) # Make sure at least some records were created
         finally:
             try:
