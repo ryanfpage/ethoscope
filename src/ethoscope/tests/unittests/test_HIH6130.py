@@ -13,7 +13,7 @@ import unittest
 import ethoscope.hardware.input.easyi2c as easyi2c
 from ethoscope.hardware.input.HIH6130 import HIH6130
 
-class TestTargetROIBuilder(unittest.TestCase):
+class TestHIH6130(unittest.TestCase):
     def test_constructWitheasyi2c(self):
         DEVICE_ADDRESS= 0x27 #For temperature sensor
         easybus= easyi2c.IIC(DEVICE_ADDRESS, 1)
