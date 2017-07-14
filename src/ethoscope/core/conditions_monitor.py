@@ -33,6 +33,21 @@ class ConditionVariable(object):
     def description(self):
         return self._description
 
+class ConditionVariableFunction(object):
+    """
+    Similar to ConditionVariable except that it takes a function to generate the value.
+    """
+    def __init__(self, function, name, description = None):
+        self._function = function
+        self._name = name
+        self._description = description
+    def value(self):
+        return self._function()
+    def name(self):
+        return self._name
+    def description(self):
+        return self._description
+
 class ConditionsProcess(multiprocessing.Process):
     """
     The portion of ConditionsMonitor that runs in a different process. This should never be invoked

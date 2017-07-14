@@ -14,10 +14,11 @@ from ethoscope.hardware.input.cameras import OurPiCameraAsync, MovieVirtualCamer
 from ethoscope.roi_builders.target_roi_builder import  OlfactionAssayROIBuilder, SleepMonitorWithTargetROIBuilder, TargetGridROIBuilder
 from ethoscope.roi_builders.roi_builders import  DefaultROIBuilder
 from ethoscope.core.monitor import Monitor
-from ethoscope.core.conditions_monitor import ConditionsMonitor, ConditionVariable
+from ethoscope.core.conditions_monitor import ConditionsMonitor, ConditionVariable, ConditionVariableFunction
 from ethoscope.drawers.drawers import NullDrawer, DefaultDrawer
 from ethoscope.trackers.adaptive_bg_tracker import AdaptiveBGModel
 from ethoscope.hardware.interfaces.interfaces import HardwareConnection
+from ethoscope.hardware.input.HIH6130 import BufferedHIH6130
 from ethoscope.stimulators.stimulators import DefaultStimulator
 #<<<<<<< HEAD
 #from ethoscope.stimulators.sleep_depriver_stimulators import , SleepDepStimulator, SleepDepStimulatorCR, ExperimentalSleepDepStimulator, MiddleCrossingStimulator#, SystematicSleepDepInteractor
@@ -313,6 +314,12 @@ class ControlThread(Thread):
         except KeyError as error:
             # analog_gain is not part of the meta data for this camera
             logging.warning("Unable to get the camera gain to add to the condition database")
+        try:
+            sensorChip = BufferedHIH6130()
+            conditionVariables.append( ConditionVariableFunction(sensorChip.humidity, "humidity") )
+            conditionVariables.append( ConditionVariableFunction(sensorChip.temperature, "temperature") )
+        except Exception as error:
+            logging.warning("Unable to get the temperature or humidity sensor to add to the conditions database because: "+str(error))
         self._conditionsMonitor = ConditionsMonitor( conditionVariables )
         dbConnectionString = "mysql://"+self._db_credentials["user"]+":"+self._db_credentials["password"]+"@localhost/"+self._db_credentials["name"]
 
