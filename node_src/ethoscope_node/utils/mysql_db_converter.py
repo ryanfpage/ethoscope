@@ -64,7 +64,7 @@ class MySQLdbConverter(object):
 
         self._batchSize = 200 # The number of inserts to group so that copying is faster
 
-    def copy_database(self, connection_address=None, sqlalchemy_engine = None):
+    def copy_database(self, connection_address=None, sqlalchemy_engine = None, skip_tables = None):
         """
         Copy the database to a new database at the location provided. The strings are in the format required by sqlalchemy e.g.
 
@@ -77,6 +77,10 @@ class MySQLdbConverter(object):
             http://docs.sqlalchemy.org/en/latest/core/engines.html
 
         This function is highly likely to fail if the file already exists.
+
+        You can also provide a list of table names that will not be included in the copy with the "skip_tables" parameter. E.g.
+        'skip_tables=["IMG_SNAPSHOTS"]' will not include image snapshots in the copied database and will save a considerable
+        amount of space.
         """
         if sqlalchemy_engine:
             if connection_address!= None : logging.warning("MySQLdbConverter: An SQLAlchemy engine was provided, so the value of connection_address is being ignored")
@@ -85,6 +89,9 @@ class MySQLdbConverter(object):
         else:
             raise Exception("MySQLdbConverter.copy_database() called without a connection address or SQLAlchemy engine")
         
+        if skip_tables==None:
+            skip_tables=[]
+
         inputMetadata = sqlalchemy.MetaData(bind=self._input_engine)
         inputMetadata.reflect(self._input_engine)
         outputMetadata = sqlalchemy.MetaData(bind=sqlalchemy_engine)
@@ -93,6 +100,8 @@ class MySQLdbConverter(object):
             #
             # First copy the schema for the table
             #
+            if tableName in skip_tables : continue
+
             outputTable = sqlalchemy.Table(inputTable.name, outputMetadata)
             for inputColumn in inputTable.columns:
                 outputTable.append_column(inputColumn.copy())

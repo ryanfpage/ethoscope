@@ -292,7 +292,10 @@ def dynamic_serve_db(id):
         response.headers["Content-Disposition"]="attachment; filename=ethoscope_db.txt"
         converter = MySQLdbCSVWriter( remote_host=remote_host )
         return converter.enumerate_roi_tables()
-    elif format=="sqlite":
+    elif format=="sqlite" or format=="sqlite-slim":
+        if format=="sqlite": skip_tables=None
+        else: skip_tables=["IMG_SNAPSHOTS"]
+
         # Usually doesn't work if the file already exists
         temporaryFilename = "/dev/shm/ethoscope_db.sqlite"
         try:
@@ -301,7 +304,7 @@ def dynamic_serve_db(id):
             pass
 
         converter = MySQLdbConverter( remote_host=remote_host )
-        converter.copy_database("sqlite:////"+temporaryFilename)
+        converter.copy_database("sqlite:////"+temporaryFilename, skip_tables=skip_tables)
         return static_file(temporaryFilename, root="/", download="ethoscope_db.sqlite")
     else:
         raise Exception("The format '"+format+"' is not known")
