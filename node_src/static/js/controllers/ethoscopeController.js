@@ -170,10 +170,19 @@ app.controller('ethoscopeController', function($scope, $http, $routeParams, $int
             $http.get($scope.device.ip+':9000/static'+$scope.result_files);
         };
 
-        $scope.ethoscope.downloaddb = function(){
+        $scope.ethoscope.downloaddb = function(format){
+            // Can't figure out how to do this querySelector on the HTML side, so do it
+            // here instead. I'd prefer to not have to know the input name at this point.
+            try{
+                if( format==undefined ) format=document.querySelector('input[name="download_format"]:checked').value;
+            }
+            catch(error){
+                console.error("Unable to get the format for the database download",error);
+            }
+
             var downloadLink=$("#downloaddbHiddenLink")
             downloadLink.attr({
-                href: "/downloaddb/"+device_id+"?ip="+$scope.device.ip,
+                href: "/downloaddb/"+device_id+"?ip="+$scope.device.ip + (format!=undefined ? "&format="+format : ""),
                 target: "_blank"
                 })
             downloadLink[0].click();

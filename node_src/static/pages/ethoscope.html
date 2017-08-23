@@ -141,7 +141,9 @@
         <h4 class="modal-title" id="downloadResultsModalLabel">Download results</h4>
       </div>
       <div class="modal-body">
-        Download the results database as tab separated values.
+        <input type="radio" name="download_format" value="tab"/>As tab separated values (doesn't include conditions data)<br/>
+        <input type="radio" name="download_format" value="sqlite"/>Full database as SQLite3 file<br/>
+        <input type="radio" name="download_format" value="sqlite-slim" checked/>As SQLite3 file but without image snapshots (considerably smaller files)<br/>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

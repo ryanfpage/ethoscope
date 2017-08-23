@@ -6,6 +6,7 @@ import traceback
 from ethoscope_node.utils.helpers import  get_local_ip, get_internet_ip
 from ethoscope_node.utils.device_scanner import DeviceScanner
 from ethoscope_node.utils.mysql_db_writer import MySQLdbCSVWriter
+from ethoscope_node.utils.mysql_db_converter import MySQLdbConverter
 from os import walk
 import optparse
 import zipfile
@@ -281,13 +282,32 @@ def redirection_to_home(id):
 
 @app.get('/downloaddb/<id>')
 def dynamic_serve_db(id):
-    response.headers["Content-Disposition"]="attachment; filename=ethoscope_db.txt"
-    try:
-        remote_host=request.query["ip"]
-    except:
-        remote_host="localhost"
-    converter = MySQLdbCSVWriter( remote_host=remote_host)
-    return converter.enumerate_roi_tables()
+    try:    remote_host=request.query["ip"]
+    except: remote_host="localhost"
+
+    try:    format=request.query["format"]
+    except: format="tab"
+
+    if format=="tab":
+        response.headers["Content-Disposition"]="attachment; filename=ethoscope_db.txt"
+        converter = MySQLdbCSVWriter( remote_host=remote_host )
+        return converter.enumerate_roi_tables()
+    elif format=="sqlite" or format=="sqlite-slim":
+        if format=="sqlite": skip_tables=None
+        else: skip_tables=["IMG_SNAPSHOTS"]
+
+        # Usually doesn't work if the file already exists
+        temporaryFilename = "/dev/shm/ethoscope_db.sqlite"
+        try:
+            os.remove(temporaryFilename)
+        except:
+            pass
+
+        converter = MySQLdbConverter( remote_host=remote_host )
+        converter.copy_database("sqlite:////"+temporaryFilename, skip_tables=skip_tables)
+        return static_file(temporaryFilename, root="/", download="ethoscope_db.sqlite")
+    else:
+        raise Exception("The format '"+format+"' is not known")
 
 @app.get('/device/<id>/ip')
 @error_decorator
