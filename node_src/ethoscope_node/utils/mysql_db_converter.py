@@ -58,11 +58,11 @@ class MySQLdbConverter(object):
             if input_address!= None : logging.warning("MySQLdbConverter: An SQLAlchemy engine was provided, so the value of input_address is being ignored")
             self._input_engine = input_engine
         elif input_address:
-            self._input_engine = sqlalchemy.create_engine(connection_address)
+            self._input_engine = sqlalchemy.create_engine(input_address)
         else:
             self._input_engine = sqlalchemy.create_engine("mysql://"+remote_user+":"+remote_pass+"@"+remote_host+"/"+remote_db_name)
 
-        self._batchSize = 200 # The number of inserts to group so that copying is faster
+        self._batchSize = 2000 # The number of inserts to group so that copying is faster
 
     def copy_database(self, connection_address=None, sqlalchemy_engine = None, skip_tables = None):
         """
