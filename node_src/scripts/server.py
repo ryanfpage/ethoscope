@@ -7,13 +7,15 @@ from ethoscope_node.utils.helpers import  get_local_ip, get_internet_ip
 from ethoscope_node.utils.device_scanner import DeviceScanner
 from ethoscope_node.utils.mysql_db_writer import MySQLdbCSVWriter
 from ethoscope_node.utils.mysql_db_converter import MySQLdbConverter
-from os import walk
+from os import walk, environ
 import optparse
 import zipfile
 import datetime
 import fnmatch
 import tempfile
 import shutil
+import urllib2
+import time
 
 app = Bottle()
 STATIC_DIR = "../static"
@@ -329,6 +331,31 @@ def close(exit_status=0):
     logging.info("Closing server")
     os._exit(exit_status)
 
+def watchdog( notifier, url, watchdogTime ):
+    """
+    Loop running on another thread that periodically checks the webpage is available, and
+    sends a signal (presumably to systemd) to say that the process is still alive.
+    """
+    watchdogTime=float(watchdogTime)
+    logging.debug("Watchdog time is "+str(watchdogTime))
+    while True:
+        urlIsAvailable = False
+        for delay in [5,10,15,0]: # Try to get the URL four times
+            try:
+                urllib2.urlopen(url)
+                urlIsAvailable = True
+                break
+            except Exception as error:
+                logging.warning("Watchdog failed to get url '"+url+"', trying again in "+str(delay)+" seconds")
+                pass # Wait a bit and try again
+            time.sleep(delay)
+        if not urlIsAvailable:
+            logging.error("Watchdog failed to get url '"+url+"' on successive attempts. Watchdog is quitting, systemd will probably restart the service soon")
+            break
+        logging.debug("Sending watchdog signal")
+        notifier.notify("WATCHDOG=1")
+        time.sleep( watchdogTime*0.75 ) # 0.75 to give an arbitrary amount of leeway
+
 
 #======================================================================================================================#
 
@@ -357,6 +384,21 @@ if __name__ == '__main__':
         logging.warning("Could not access internet!")
         logging.warning(traceback.format_exc(e))
         WWW_IP = None
+
+    # See if systemd is expecting notifications to say we're still alive. If
+    # it does then the WATCHDOG_USEC environment variable will be set.
+    try:
+        # Convert time from micro sec to seconds
+        watchdogTime = float( environ["WATCHDOG_USEC"] )/1000000
+        import sdnotify
+        watchdogUrl="http://localhost:"+str(PORT)
+        watchdogThread=threading.Thread( target=watchdog, args=(sdnotify.SystemdNotifier(), watchdogUrl, watchdogTime) )
+        watchdogThread.start()
+        logging.info("Watchdog thread started checking '"+watchdogUrl+"' and reporting at least every "+str(watchdogTime)+" seconds")
+    except KeyError as error: # Env variable WATCHDOG_USEC not set
+        logging.warning("No watchdog thread is running (either not running under systemd, or 'WatchdogSec' was not set for the service)")
+    except Exception as error: # Some other unknown error
+        logging.warning("No watchdog thread is running because of error: "+str(error))
 
     tmp_imgs_dir = tempfile.mkdtemp(prefix="ethoscope_node_imgs")
     device_scanner = None
