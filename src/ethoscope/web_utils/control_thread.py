@@ -19,6 +19,7 @@ from ethoscope.drawers.drawers import NullDrawer, DefaultDrawer
 from ethoscope.trackers.adaptive_bg_tracker import AdaptiveBGModel
 from ethoscope.hardware.interfaces.interfaces import HardwareConnection
 from ethoscope.hardware.input.HIH6130 import BufferedHIH6130
+from ethoscope.hardware.input.TSL2591 import TSL2591
 from ethoscope.stimulators.stimulators import DefaultStimulator
 #<<<<<<< HEAD
 #from ethoscope.stimulators.sleep_depriver_stimulators import , SleepDepStimulator, SleepDepStimulatorCR, ExperimentalSleepDepStimulator, MiddleCrossingStimulator#, SystematicSleepDepInteractor
@@ -322,6 +323,12 @@ class ControlThread(Thread):
             conditionVariables.append( ConditionVariableFunction(sensorChip.temperature, "temperature") )
         except Exception as error:
             logging.warning("Unable to get the temperature or humidity sensor to add to the conditions database because: "+str(error))
+        try:
+            lightSensorChip = TSL2591()
+            lightSensorChip.powerOn()
+            conditionVariables.append( ConditionVariableFunction(lightSensorChip.lux, "illuminance") )
+        except Exception as error:
+            logging.warning("Unable to get the light sensor to add to the conditions database because: "+str(error))
         self._conditionsMonitor = ConditionsMonitor( conditionVariables )
         dbConnectionString = "mysql://"+self._db_credentials["user"]+":"+self._db_credentials["password"]+"@localhost/"+self._db_credentials["name"]
 
