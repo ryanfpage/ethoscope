@@ -34,7 +34,8 @@ setup(
         "numpy>=1.6.1",
         "scipy >= 0.14.0",
         "zeroconf>=0.19.1",
-        "SQLAlchemy"
+        "SQLAlchemy",
+        "smbus"
     ],
     tests_require=['nose', 'mock'],
     test_suite='nose.collector'
