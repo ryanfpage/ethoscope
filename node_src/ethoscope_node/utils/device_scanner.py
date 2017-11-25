@@ -76,18 +76,24 @@ class DeviceScanner(object):
         Method required to be a Zeroconf listener. Called by Zeroconf when a "_ethoscope._tcp" service
         is registered on the network. Don't call directly.
         """
-        info = zeroconf.get_service_info(type, name)
-        # Note that I don't trust the address given in the info. When registering, the
-        # service doesn't know which interface it will be accessed by and hence which IP
-        # address to use (src/scripts/device_server.py puts gibberish in this field for
-        # this reason).
-        # Query the IP address just using the services hostname and zeroconf.
-        ip=socket.gethostbyname(info.get_name()+".local")
-        device = Device(ip, self.device_refresh_period, results_dir=self.results_dir)
-        device.zeroconf_name = name
-        device.start()
-        logging.info("New device detected with id = %s at IP = %s" % (device.id(), ip))
-        self.devices.append(device)
+        try:
+            info = zeroconf.get_service_info(type, name)
+            # Note that I don't trust the address given in the info. When registering, the
+            # service doesn't know which interface it will be accessed by and hence which IP
+            # address to use (src/scripts/device_server.py puts gibberish in this field for
+            # this reason).
+            # Query the IP address just using the services hostname and zeroconf.
+            if info:
+                ip=socket.gethostbyname(info.get_name()+".local")
+            else:
+                ip=socket.gethostbyname(name.split(".")[0]+".local")
+            device = Device(ip, self.device_refresh_period, results_dir=self.results_dir)
+            device.zeroconf_name = name
+            device.start()
+            logging.info("New device detected with id = %s at IP = %s" % (device.id(), ip))
+            self.devices.append(device)
+        except Exception as error:
+            logging.error("Exception trying to add zeroconf service '"+name+"' of type '"+type+"': "+str(error))
     def remove_service(self, zeroconf, type, name):
         """
         Method required to be a Zeroconf listener. Called by Zeroconf when a "_ethoscope._tcp" service
