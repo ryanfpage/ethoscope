@@ -256,12 +256,18 @@ if __name__ == '__main__':
         run(api, host='0.0.0.0', port=port, debug=option_dict["debug"])
     except Exception as e:
         logging.error(e)
-        zeroconf.unregister_service(serviceInfo)
-        zeroconf.close()
+        try:
+            zeroconf.unregister_service(serviceInfo)
+            zeroconf.close()
+        except:
+            pass
         close(1)
     finally:
-        zeroconf.unregister_service(serviceInfo)
-        zeroconf.close()
+        try:
+            zeroconf.unregister_service(serviceInfo)
+            zeroconf.close()
+        except:
+            pass
         close()
 
 
